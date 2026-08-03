@@ -244,7 +244,7 @@
     }
     .modal-box {
       background: var(--card); border-radius: 20px; padding: 28px;
-      max-width: 540px; width: 100%; max-height: 88vh; overflow-y: auto; position: relative;
+      max-width: 920px; width: 100%; max-height: 88vh; overflow-y: auto; position: relative;
       box-shadow: 0 20px 60px rgba(0,0,0,.35);
     }
     .modal-close {
@@ -295,6 +295,23 @@
     .results-table tr:last-child td { border-bottom: none; }
     .results-table .warn-cell { color: var(--danger); font-weight: 800; }
     .results-empty { text-align: center; padding: 24px; color: var(--muted); font-size: 15px; }
+    .teacher-nav { display: flex; gap: 8px; margin: 18px 0; padding: 5px; background: #f1f5f9; border-radius: 12px; }
+    .teacher-nav-btn { width: auto; margin: 0; padding: 9px 16px; background: transparent; color: var(--muted); box-shadow: none; font-size: 14px; }
+    .teacher-nav-btn:hover { transform: none; box-shadow: none; background: #fff; }
+    .teacher-nav-btn.active { background: #fff; color: var(--primary-dark); box-shadow: 0 1px 4px rgba(15,23,42,.12); }
+    .teacher-filters { display: grid; grid-template-columns: minmax(220px, 1fr) 170px; gap: 10px; margin-top: 14px; }
+    .teacher-filters input, .teacher-filters select { margin: 0; padding: 10px 12px; font-size: 14px; }
+    .delete-result-btn { width: auto; margin: 0; padding: 7px 10px; background: #fff1f2; color: #b91c1c; box-shadow: none; font-size: 13px; }
+    .delete-result-btn:hover:not(:disabled) { background: #fee2e2; transform: none; box-shadow: none; }
+    .teacher-message { margin-top: 12px; padding: 10px 12px; border-radius: 10px; font-size: 14px; font-weight: 700; }
+    .teacher-message.success { background: var(--success-light); color: #14532d; }
+    .teacher-message.error { background: var(--danger-light); color: #7f1d1d; }
+    .delete-note { margin-top: 10px; color: var(--muted); font-size: 13px; }
+    @media (max-width: 640px) {
+      .modal-box { padding: 22px 16px; }
+      .teacher-filters { grid-template-columns: 1fr; }
+      .teacher-nav-btn { flex: 1; padding: 9px 8px; }
+    }
   </style>
 </head>
 <body>
@@ -443,21 +460,36 @@
         <button id="teacherLogoutBtn" class="link-btn">ออกจากระบบ</button>
       </div>
 
-      <div class="exam-toggle-card">
-        <div>
-          <div class="exam-toggle-label">สถานะข้อสอบ</div>
-          <div class="exam-toggle-status" id="examStatusText">กำลังตรวจสอบ...</div>
+      <div class="teacher-nav" role="tablist" aria-label="เมนูสำหรับครู">
+        <button class="teacher-nav-btn active" data-panel="overview" role="tab">ภาพรวม</button>
+        <button class="teacher-nav-btn" data-panel="results" role="tab">ผลการทดสอบ</button>
+      </div>
+
+      <section id="teacherPanelOverview" class="teacher-panel">
+        <div class="exam-toggle-card">
+          <div>
+            <div class="exam-toggle-label">สถานะข้อสอบ</div>
+            <div class="exam-toggle-status" id="examStatusText">กำลังตรวจสอบ...</div>
+          </div>
+          <button id="examToggleBtn" class="toggle-switch" data-open="0" aria-label="เปิด/ปิดข้อสอบ"></button>
         </div>
-        <button id="examToggleBtn" class="toggle-switch" data-open="0" aria-label="เปิด/ปิดข้อสอบ"></button>
-      </div>
 
-      <div class="teacher-stats-grid" id="teacherStatsGrid"></div>
+        <div class="teacher-stats-grid" id="teacherStatsGrid"></div>
+      </section>
 
-      <div class="dash-header" style="margin-top:22px;">
-        <h3>รายชื่อผู้ส่งข้อสอบแล้ว</h3>
-        <button id="refreshResultsBtn" class="link-btn">รีเฟรช</button>
-      </div>
-      <div id="resultsTableWrap" class="results-table-wrap"></div>
+      <section id="teacherPanelResults" class="teacher-panel hidden">
+        <div class="dash-header">
+          <h3>รายชื่อและผลการทดสอบ</h3>
+          <button id="refreshResultsBtn" class="link-btn">รีเฟรช</button>
+        </div>
+        <div class="teacher-filters">
+          <input type="search" id="teacherSearchInput" placeholder="ค้นหาชื่อหรือรหัสนักเรียน">
+          <select id="teacherClassFilter" aria-label="กรองตามชั้น"><option value="">ทุกชั้น</option></select>
+        </div>
+        <div class="delete-note">การลบผลสอบจะทำให้นักเรียนคนนั้นสามารถเข้าสอบใหม่ได้ ระบบจะถามยืนยันก่อนลบทุกครั้ง</div>
+        <div id="teacherMessage" class="teacher-message hidden"></div>
+        <div id="resultsTableWrap" class="results-table-wrap"></div>
+      </section>
     </div>
   </div>
 </div>
@@ -923,6 +955,7 @@
 
   // ===== แผงควบคุมสำหรับครู =====
   var teacherCode = null;
+  var teacherRows = [];
 
   $('teacherLinkBtn').addEventListener('click', function () {
     $('teacherModal').classList.remove('hidden');
@@ -960,6 +993,7 @@
         teacherCode = code;
         $('teacherLoginView').classList.add('hidden');
         $('teacherDashboardView').classList.remove('hidden');
+        showTeacherPanel('overview');
         renderExamToggle(result.examOpen);
         loadTeacherResults();
       })
@@ -972,8 +1006,21 @@
 
   $('teacherLogoutBtn').addEventListener('click', function () {
     teacherCode = null;
+    teacherRows = [];
     closeTeacherModal();
   });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.teacher-nav-btn'), function (btn) {
+    btn.addEventListener('click', function () { showTeacherPanel(btn.getAttribute('data-panel')); });
+  });
+
+  function showTeacherPanel(panel) {
+    $('teacherPanelOverview').classList.toggle('hidden', panel !== 'overview');
+    $('teacherPanelResults').classList.toggle('hidden', panel !== 'results');
+    Array.prototype.forEach.call(document.querySelectorAll('.teacher-nav-btn'), function (btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-panel') === panel);
+    });
+  }
 
   function renderExamToggle(isOpen) {
     var btn = $('examToggleBtn');
@@ -1007,12 +1054,42 @@
     $('resultsTableWrap').innerHTML = '<div class="results-empty">กำลังโหลด...</div>';
     callApi('getResponses', { code: teacherCode }, 'POST')
       .then(function (result) {
-        renderTeacherStats(result.rows);
-        renderResultsTable(result.rows);
+        teacherRows = result.rows || [];
+        renderTeacherStats(teacherRows);
+        populateClassFilter(teacherRows);
+        applyTeacherFilters();
       })
       .catch(function (err) {
         $('resultsTableWrap').innerHTML = '<div class="results-empty">โหลดข้อมูลไม่สำเร็จ: ' + escapeHtml((err && err.message) ? err.message : String(err)) + '</div>';
       });
+  }
+
+  $('teacherSearchInput').addEventListener('input', applyTeacherFilters);
+  $('teacherClassFilter').addEventListener('change', applyTeacherFilters);
+
+  function populateClassFilter(rows) {
+    var select = $('teacherClassFilter');
+    var current = select.value;
+    var classes = [];
+    rows.forEach(function (r) {
+      var value = String(r.className || '');
+      if (value && classes.indexOf(value) === -1) classes.push(value);
+    });
+    classes.sort();
+    select.innerHTML = '<option value="">ทุกชั้น</option>' + classes.map(function (value) {
+      return '<option value="' + escapeHtml(value) + '">' + escapeHtml(value) + '</option>';
+    }).join('');
+    if (classes.indexOf(current) !== -1) select.value = current;
+  }
+
+  function applyTeacherFilters() {
+    var query = $('teacherSearchInput').value.trim().toLowerCase();
+    var className = $('teacherClassFilter').value;
+    var filtered = teacherRows.filter(function (r) {
+      var haystack = (String(r.studentId || '') + ' ' + String(r.name || '')).toLowerCase();
+      return (!query || haystack.indexOf(query) !== -1) && (!className || String(r.className || '') === className);
+    });
+    renderResultsTable(filtered);
   }
 
   function renderTeacherStats(rows) {
@@ -1039,7 +1116,7 @@
       return;
     }
     var html = '<table class="results-table"><thead><tr>' +
-      '<th>ชื่อ-นามสกุล</th><th>ชั้น</th><th>เลขที่</th><th>คะแนน</th><th>ร้อยละ</th><th>เวลาที่ใช้</th><th>สลับหน้าจอ</th><th>เวลาที่ส่ง</th>' +
+      '<th>รหัสนักเรียน</th><th>ชื่อ-นามสกุล</th><th>ชั้น</th><th>เลขที่</th><th>คะแนน</th><th>ร้อยละ</th><th>เวลาที่ใช้</th><th>สลับหน้าจอ</th><th>เวลาที่ส่ง</th><th>จัดการ</th>' +
       '</tr></thead><tbody>';
     rows.forEach(function (r) {
       var mins = Math.floor((r.durationSec || 0) / 60);
@@ -1049,6 +1126,7 @@
       var tsStr = ts ? (ts.toLocaleDateString('th-TH') + ' ' + ts.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })) : '-';
       var tabCellClass = Number(r.tabSwitchCount || 0) >= SUSPICIOUS_TAB_SWITCH_DISPLAY ? 'warn-cell' : '';
       html += '<tr>' +
+        '<td>' + escapeHtml(String(r.studentId || '')) + '</td>' +
         '<td>' + escapeHtml(String(r.name || '')) + '</td>' +
         '<td>' + escapeHtml(String(r.className || '')) + '</td>' +
         '<td>' + escapeHtml(String(r.seatNo || '')) + '</td>' +
@@ -1057,10 +1135,42 @@
         '<td>' + timeStr + '</td>' +
         '<td class="' + tabCellClass + '">' + (r.tabSwitchCount || 0) + '</td>' +
         '<td>' + tsStr + '</td>' +
+        '<td><button class="delete-result-btn" data-student-id="' + encodeURIComponent(String(r.studentId || '')) + '" data-student-name="' + encodeURIComponent(String(r.name || '')) + '">ลบผลสอบ</button></td>' +
         '</tr>';
     });
     html += '</tbody></table>';
     wrap.innerHTML = html;
+  }
+
+  $('resultsTableWrap').addEventListener('click', function (e) {
+    var btn = e.target.closest('.delete-result-btn');
+    if (!btn) return;
+    deleteStudentResponse(decodeURIComponent(btn.getAttribute('data-student-id')), decodeURIComponent(btn.getAttribute('data-student-name')), btn);
+  });
+
+  function deleteStudentResponse(studentId, studentName, btn) {
+    if (!teacherCode) return;
+    var confirmed = confirm('ยืนยันการลบผลสอบของ\n' + studentName + ' (รหัส ' + studentId + ')\n\nนักเรียนจะสามารถเข้าสอบใหม่ได้หลังลบ');
+    if (!confirmed) return;
+    btn.disabled = true;
+    btn.textContent = 'กำลังลบ...';
+    callApi('deleteResponse', { code: teacherCode, studentId: studentId }, 'POST')
+      .then(function () {
+        showTeacherMessage('ลบผลสอบของ ' + studentName + ' แล้ว', 'success');
+        loadTeacherResults();
+      })
+      .catch(function (err) {
+        btn.disabled = false;
+        btn.textContent = 'ลบผลสอบ';
+        showTeacherMessage((err && err.message) ? err.message : 'ลบผลสอบไม่สำเร็จ', 'error');
+      });
+  }
+
+  function showTeacherMessage(message, type) {
+    var box = $('teacherMessage');
+    box.textContent = message;
+    box.className = 'teacher-message ' + type;
+    setTimeout(function () { box.classList.add('hidden'); }, 4000);
   }
 
   updateStepsIndicator('step-info');
