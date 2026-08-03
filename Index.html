@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <style>
+    :root {
+      --primary: #4a86e8;
+      --primary-dark: #3a6fc4;
+      --green: #38761d;
+      --red: #cc0000;
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e2e6ea;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "TH Sarabun New", "Sarabun", "Segoe UI", Tahoma, sans-serif;
+      background: var(--bg);
+      color: #000000;
+      margin: 0;
+      padding: 16px;
+      font-size: 19px;
+      line-height: 1.6;
+    }
+    .container { max-width: 720px; margin: 0 auto; }
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    h1 { font-size: 30px; margin: 0 0 8px; color: #000000; font-weight: 800; }
+    h2 { font-size: 24px; margin: 0 0 12px; color: #000000; }
+    p.sub { color: #000000; margin-top: 0; font-size: 19px; }
+    label { display: block; font-weight: 700; margin: 18px 0 8px; color: #000000; font-size: 20px; }
+    input[type=text], select {
+      width: 100%;
+      padding: 14px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 22px;
+      font-family: inherit;
+      color: #000000;
+    }
+    button {
+      font-family: inherit;
+      font-size: 20px;
+      font-weight: 700;
+      padding: 16px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: var(--primary);
+      color: #fff;
+      width: 100%;
+      margin-top: 20px;
+    }
+    button:hover { background: var(--primary-dark); }
+    button:disabled { background: #a9b6c8; cursor: not-allowed; }
+    .error { color: var(--red); margin-top: 10px; font-size: 16px; font-weight: 700; }
+    .hidden { display: none !important; }
+
+    /* Quiz header bar */
+    .quiz-topbar {
+      position: sticky; top: 0; z-index: 5;
+      background: var(--card);
+      border-radius: 12px;
+      padding: 12px 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      margin-bottom: 16px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+    }
+    .quiz-topbar .badge {
+      background: #eef3fc; color: #000000;
+      padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 16px;
+    }
+    .quiz-topbar .timer { font-variant-numeric: tabular-nums; color: #000000; font-size: 18px; font-weight: 700; }
+    .progress-bar { height: 8px; background: #e5e9f0; border-radius: 999px; overflow: hidden; margin-top: 8px; }
+    .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width .2s; }
+
+    .question {
+      border-bottom: 1px solid var(--border);
+      padding: 18px 0;
+    }
+    .question:last-child { border-bottom: none; }
+    .question .qtext { font-weight: 700; margin-bottom: 12px; color: #000000; font-size: 20px; }
+    .choice {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 10px; border-radius: 8px; cursor: pointer;
+      font-size: 19px; color: #000000;
+    }
+    .choice:hover { background: #f7f9fc; }
+    .choice input { margin-top: 4px; width: 18px; height: 18px; }
+    .choice .letter { font-weight: 700; color: var(--primary-dark); min-width: 22px; }
+
+    /* Result screen */
+    .score-big { font-size: 48px; font-weight: 800; color: var(--primary-dark); text-align: center; }
+    .score-sub { text-align: center; color: #000000; margin-bottom: 6px; font-size: 19px; }
+    .pass { color: var(--green); }
+    .fail { color: var(--red); }
+    .review-item { border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+    .review-item.correct { background: #eaf6e6; }
+    .review-item.wrong { background: #fdecea; }
+    .review-item .rq { font-weight: 700; margin-bottom: 6px; color: #000000; font-size: 19px; }
+    .review-item .rline { font-size: 17px; color: #000000; }
+    .review-item .rline.correct-ans { color: var(--green); font-weight: 700; }
+    .review-item .rline.wrong-ans { color: var(--red); font-weight: 700; }
+    .loading { text-align: center; padding: 40px 0; color: #000000; font-size: 19px; }
+    .spinner {
+      width: 32px; height: 32px; border: 3px solid #dfe6f0; border-top-color: var(--primary);
+      border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .footer-note { text-align: center; color: #000000; font-size: 17px; margin-top: 12px; line-height: 1.6; }
+
+    .student-searching { color: #000000; font-size: 17px; margin-top: 10px; font-weight: 600; }
+    .student-preview {
+      margin-top: 10px; padding: 14px 16px; border-radius: 8px; font-size: 18px;
+    }
+    .student-preview.found { background: #eaf6e6; border: 2px solid #c5e6bb; }
+    .student-preview.found .name { font-weight: 800; color: var(--green); font-size: 20px; }
+    .student-preview.found .meta { color: #000000; font-size: 17px; margin-top: 4px; }
+    .student-preview.notfound { background: #fdecea; border: 2px solid #f5c2bd; color: #7a0000; font-weight: 600; }
+    .student-preview.taken { background: #fff4e5; border: 2px solid #f5d8a8; color: #5c3200; font-weight: 600; }
+
+    .timer.warning { color: var(--red); font-weight: 700; }
+    .badge.warning { background: #fdecea; color: var(--red); }
+
+    #questionsWrap { user-select: none; -webkit-user-select: none; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- STEP 1: ข้อมูลผู้เข้าสอบ -->
+  <div id="step-info" class="card">
+    <h1>แบบทดสอบออนไลน์</h1>
+    <p class="sub">รายวิชา การขายสำหรับนักธุรกิจมืออาชีพ &middot; หน่วยที่ 1&ndash;2 ส่วนประสมทางการตลาด 4P</p>
+
+    <label for="inpStudentId">รหัสประจำตัวนักเรียน</label>
+    <input type="text" id="inpStudentId" placeholder="เช่น 15140" inputmode="numeric" autocomplete="off">
+
+    <div id="studentPreview" class="student-preview hidden"></div>
+    <div id="studentSearching" class="student-searching hidden">กำลังค้นหา...</div>
+
+    <button id="btnStart" disabled>เริ่มทำแบบทดสอบ</button>
+    <div id="infoError" class="error hidden"></div>
+    <p class="footer-note">กรอกรหัสประจำตัวนักเรียนแล้วระบบจะแสดงชื่อ&ndash;ชั้น&ndash;เลขที่ให้ตรวจสอบก่อนเริ่มสอบ<br>เวลาทำข้อสอบ 40 นาที ทำได้คนละ 1 ครั้งเท่านั้น &middot; ระบบสุ่มลำดับข้อและตัวเลือกไม่ซ้ำกันในแต่ละคนเพื่อป้องกันการทุจริต</p>
+  </div>
+
+  <!-- LOADING -->
+  <div id="step-loading" class="card hidden">
+    <div class="loading">
+      <div class="spinner"></div>
+      กำลังเตรียมข้อสอบ...
+    </div>
+  </div>
+
+  <!-- STEP 2: ทำข้อสอบ -->
+  <div id="step-quiz" class="hidden">
+    <div class="quiz-topbar">
+      <div>
+        <span class="badge" id="setBadge">รหัสข้อสอบ: -</span>
+        <span class="badge" id="answeredBadge" style="margin-left:6px;">ตอบแล้ว 0/40</span>
+        <span class="badge hidden" id="tabSwitchBadge" style="margin-left:6px;">สลับหน้าจอ 0 ครั้ง</span>
+      </div>
+      <div class="timer" id="timerDisplay">เหลือเวลา 40:00</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="card" style="margin-top:16px;" id="questionsWrap"></div>
+
+    <div class="card">
+      <button id="btnSubmit">ส่งคำตอบ</button>
+      <div id="quizError" class="error hidden"></div>
+    </div>
+  </div>
+
+  <!-- STEP 3: ผลคะแนน -->
+  <div id="step-result" class="card hidden">
+    <h2>ผลการทดสอบ</h2>
+    <div class="score-big"><span id="resScore">0</span>/<span id="resTotal">40</span></div>
+    <div class="score-sub" id="resPercent">0%</div>
+    <div class="score-sub" id="resPassFail"></div>
+
+    <button id="btnToggleReview" style="background:#eef3fc; color:#3a6fc4;">แสดงเฉลยและเปรียบเทียบคำตอบ</button>
+    <div id="reviewWrap" class="hidden" style="margin-top:16px;"></div>
+  </div>
+
+</div>
+
+<script>
+  var LETTERS = ['ก', 'ข', 'ค', 'ง'];
+  var state = {
+    studentId: null,
+    fullName: null,
+    className: null,
+    seatNo: null,
+    examCode: null,
+    questions: [],
+    answers: {},
+    startTs: null,
+    timerHandle: null,
+    durationSec: 40 * 60,
+    deadlineTs: null,
+    tabSwitchCount: 0,
+    quizActive: false,
+    submitted: false
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var lookupTimer = null;
+  var lookupSeq = 0;
+
+  $('inpStudentId').addEventListener('input', function () {
+    var id = $('inpStudentId').value.trim();
+    resetStudentSelection();
+    if (lookupTimer) clearTimeout(lookupTimer);
+    if (!id) {
+      $('studentPreview').classList.add('hidden');
+      $('studentSearching').classList.add('hidden');
+      return;
+    }
+    $('studentPreview').classList.add('hidden');
+    $('studentSearching').classList.remove('hidden');
+    lookupTimer = setTimeout(function () { runLookup(id); }, 400);
+  });
+
+  function resetStudentSelection() {
+    state.studentId = null;
+    state.fullName = null;
+    state.className = null;
+    state.seatNo = null;
+    $('btnStart').disabled = true;
+  }
+
+  function runLookup(id) {
+    var seq = ++lookupSeq;
+    google.script.run
+      .withSuccessHandler(function (result) {
+        if (seq !== lookupSeq) return; // ผลของการค้นหาที่เก่ากว่าค่าล่าสุด ให้ทิ้งไป
+        $('studentSearching').classList.add('hidden');
+        showStudentResult(id, result);
+      })
+      .withFailureHandler(function (err) {
+        if (seq !== lookupSeq) return;
+        $('studentSearching').classList.add('hidden');
+        $('infoError').textContent = 'เกิดข้อผิดพลาดในการค้นหา: ' + (err && err.message ? err.message : err);
+        $('infoError').classList.remove('hidden');
+      })
+      .lookupStudent(id);
+  }
+
+  function showStudentResult(id, result) {
+    var box = $('studentPreview');
+    box.classList.remove('hidden');
+    if (result.found) {
+      box.className = 'student-preview found';
+      box.innerHTML = '<div class="name">' + escapeHtml(result.fullName) + '</div>' +
+        '<div class="meta">ชั้น ' + escapeHtml(String(result.className)) + ' &middot; เลขที่ ' + escapeHtml(String(result.seatNo)) + '</div>';
+      state.studentId = result.studentId;
+      state.fullName = result.fullName;
+      state.className = result.className;
+      state.seatNo = result.seatNo;
+      $('btnStart').disabled = false;
+      $('infoError').classList.add('hidden');
+    } else {
+      box.className = 'student-preview notfound';
+      box.textContent = 'ไม่พบรหัสประจำตัวนักเรียนนี้ในระบบ กรุณาตรวจสอบตัวเลขอีกครั้ง หรือแจ้งครูผู้สอน';
+      resetStudentSelection();
+    }
+  }
+
+  function escapeHtml(s) {
+    var div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  $('btnStart').addEventListener('click', function () {
+    if (!state.studentId) {
+      $('infoError').textContent = 'กรุณากรอกรหัสประจำตัวนักเรียนที่ถูกต้องก่อนเริ่มสอบ';
+      $('infoError').classList.remove('hidden');
+      return;
+    }
+    $('infoError').classList.add('hidden');
+
+    show('step-loading');
+    google.script.run
+      .withSuccessHandler(onQuizLoaded)
+      .withFailureHandler(onServerError)
+      .startQuiz(state.studentId);
+  });
+
+  function onQuizLoaded(result) {
+    if (result.alreadyTaken) {
+      show('step-info');
+      var box = $('studentPreview');
+      box.classList.remove('hidden');
+      box.className = 'student-preview taken';
+      box.innerHTML = '<div class="name">คุณทำแบบทดสอบนี้ไปแล้ว ทำได้เพียงคนละ 1 ครั้ง</div>' +
+        '<div class="meta">คะแนนที่ได้: ' + result.score + '/' + result.total + ' (' + result.percent + '%)</div>';
+      $('btnStart').disabled = true;
+      return;
+    }
+
+    state.examCode = result.examCode;
+    state.questions = result.questions;
+    state.answers = {};
+    state.durationSec = result.durationSec || (40 * 60);
+    state.startTs = Date.now();
+    state.deadlineTs = state.startTs + state.durationSec * 1000;
+    state.tabSwitchCount = 0;
+    state.quizActive = true;
+    state.submitted = false;
+
+    $('setBadge').textContent = 'รหัสข้อสอบ: ' + result.examCode;
+    $('tabSwitchBadge').classList.add('hidden');
+    $('tabSwitchBadge').textContent = 'สลับหน้าจอ 0 ครั้ง';
+    renderQuestions();
+    startTimer();
+    show('step-quiz');
+  }
+
+  function renderQuestions() {
+    var wrap = $('questionsWrap');
+    wrap.innerHTML = '';
+    state.questions.forEach(function (q, qIdx) {
+      var qDiv = document.createElement('div');
+      qDiv.className = 'question';
+
+      var qt = document.createElement('div');
+      qt.className = 'qtext';
+      qt.textContent = 'ข้อ ' + (qIdx + 1) + '. ' + q.question;
+      qDiv.appendChild(qt);
+
+      q.choices.forEach(function (choiceText, idx) {
+        var label = document.createElement('label');
+        label.className = 'choice';
+
+        var input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'q_' + q.origNo;
+        input.value = idx;
+        input.addEventListener('change', function () {
+          state.answers[q.origNo] = choiceText;
+          updateProgress();
+        });
+
+        var letter = document.createElement('span');
+        letter.className = 'letter';
+        letter.textContent = LETTERS[idx] + '.';
+
+        var text = document.createElement('span');
+        text.textContent = choiceText;
+
+        label.appendChild(input);
+        label.appendChild(letter);
+        label.appendChild(text);
+        qDiv.appendChild(label);
+      });
+
+      wrap.appendChild(qDiv);
+    });
+    updateProgress();
+  }
+
+  function updateProgress() {
+    var answered = Object.keys(state.answers).length;
+    var total = state.questions.length;
+    $('answeredBadge').textContent = 'ตอบแล้ว ' + answered + '/' + total;
+    $('progressFill').style.width = (total ? (answered / total * 100) : 0) + '%';
+  }
+
+  // นับถอยหลังตามเวลาที่กำหนด (ค่าจากเซิร์ฟเวอร์) แล้วส่งคำตอบอัตโนมัติทันทีที่หมดเวลา
+  function startTimer() {
+    if (state.timerHandle) clearInterval(state.timerHandle);
+    updateTimerDisplay();
+    state.timerHandle = setInterval(function () {
+      var remaining = Math.max(0, Math.round((state.deadlineTs - Date.now()) / 1000));
+      updateTimerDisplay();
+      if (remaining <= 0) {
+        clearInterval(state.timerHandle);
+        doSubmit(true);
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    var remaining = Math.max(0, Math.round((state.deadlineTs - Date.now()) / 1000));
+    var mm = String(Math.floor(remaining / 60)).padStart(2, '0');
+    var ss = String(remaining % 60).padStart(2, '0');
+    $('timerDisplay').textContent = 'เหลือเวลา ' + mm + ':' + ss;
+    $('timerDisplay').classList.toggle('warning', remaining <= 5 * 60);
+  }
+
+  $('btnSubmit').addEventListener('click', function () {
+    var total = state.questions.length;
+    var answered = Object.keys(state.answers).length;
+    if (answered < total) {
+      var missing = total - answered;
+      var ok = confirm('คุณยังตอบไม่ครบ (เหลืออีก ' + missing + ' ข้อ) ต้องการส่งคำตอบเลยหรือไม่?');
+      if (!ok) return;
+    }
+    doSubmit(false);
+  });
+
+  function doSubmit(isAutoSubmit) {
+    if (state.submitted) return;
+    state.submitted = true;
+    state.quizActive = false;
+    clearInterval(state.timerHandle);
+
+    $('btnSubmit').disabled = true;
+    $('btnSubmit').textContent = isAutoSubmit ? 'หมดเวลา กำลังส่งคำตอบอัตโนมัติ...' : 'กำลังส่งคำตอบ...';
+    $('quizError').classList.add('hidden');
+
+    var durationSec = Math.floor((Date.now() - state.startTs) / 1000);
+
+    google.script.run
+      .withSuccessHandler(onSubmitted)
+      .withFailureHandler(function (err) {
+        state.submitted = false;
+        state.quizActive = true;
+        $('btnSubmit').disabled = false;
+        $('btnSubmit').textContent = 'ส่งคำตอบ';
+        $('quizError').textContent = 'เกิดข้อผิดพลาด: ' + (err && err.message ? err.message : err);
+        $('quizError').classList.remove('hidden');
+      })
+      .submitQuiz({
+        studentId: state.studentId,
+        name: state.fullName,
+        className: state.className,
+        number: state.seatNo,
+        examCode: state.examCode,
+        answers: state.answers,
+        durationSec: durationSec,
+        tabSwitchCount: state.tabSwitchCount
+      });
+  }
+
+  // นับจำนวนครั้งที่ออกจากแท็บ/สลับหน้าจอระหว่างทำข้อสอบ (บันทึกไว้ให้ครูตรวจสอบ)
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden && state.quizActive) {
+      state.tabSwitchCount++;
+      var badge = $('tabSwitchBadge');
+      badge.textContent = 'สลับหน้าจอ ' + state.tabSwitchCount + ' ครั้ง';
+      badge.classList.remove('hidden');
+      badge.classList.toggle('warning', state.tabSwitchCount >= 3);
+    }
+  });
+
+  // เตือนก่อนปิด/ออกจากหน้าเว็บระหว่างทำข้อสอบ
+  window.addEventListener('beforeunload', function (e) {
+    if (state.quizActive && !state.submitted) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+
+  // ปิดการคัดลอก/วาง/คลิกขวาในส่วนโจทย์ กันการคัดลอกไปค้นหาคำตอบ
+  ['contextmenu', 'copy', 'cut', 'paste'].forEach(function (evt) {
+    $('questionsWrap').addEventListener(evt, function (e) { e.preventDefault(); });
+  });
+
+  function onSubmitted(result) {
+    $('resScore').textContent = result.score;
+    $('resTotal').textContent = result.total;
+    $('resPercent').textContent = result.percent + '%';
+
+    var passed = result.percent >= 50;
+    var pf = $('resPassFail');
+    pf.textContent = passed ? 'ผ่านเกณฑ์ (50%)' : 'ไม่ผ่านเกณฑ์ (50%)';
+    pf.className = 'score-sub ' + (passed ? 'pass' : 'fail');
+
+    if (result.detail && result.detail.length) {
+      buildReview(result.detail);
+      $('btnToggleReview').classList.remove('hidden');
+    } else {
+      $('btnToggleReview').classList.add('hidden');
+      $('reviewWrap').classList.add('hidden');
+    }
+    show('step-result');
+  }
+
+  function buildReview(detail) {
+    var wrap = $('reviewWrap');
+    wrap.innerHTML = '';
+    detail.forEach(function (d, idx) {
+      var div = document.createElement('div');
+      div.className = 'review-item ' + (d.isCorrect ? 'correct' : 'wrong');
+
+      var rq = document.createElement('div');
+      rq.className = 'rq';
+      rq.textContent = 'ข้อ ' + (idx + 1) + '. ' + d.question;
+      div.appendChild(rq);
+
+      var yourAns = document.createElement('div');
+      yourAns.className = 'rline ' + (d.isCorrect ? 'correct-ans' : 'wrong-ans');
+      yourAns.textContent = 'คำตอบของคุณ: ' + (d.chosenText != null ? d.chosenText : '(ไม่ได้ตอบ)');
+      div.appendChild(yourAns);
+
+      if (!d.isCorrect) {
+        var correctAns = document.createElement('div');
+        correctAns.className = 'rline correct-ans';
+        correctAns.textContent = 'เฉลย: ' + d.correctText;
+        div.appendChild(correctAns);
+      }
+
+      wrap.appendChild(div);
+    });
+  }
+
+  $('btnToggleReview').addEventListener('click', function () {
+    var w = $('reviewWrap');
+    w.classList.toggle('hidden');
+    $('btnToggleReview').textContent = w.classList.contains('hidden')
+      ? 'แสดงเฉลยและเปรียบเทียบคำตอบ'
+      : 'ซ่อนเฉลย';
+  });
+
+  function onServerError(err) {
+    show('step-info');
+    $('infoError').textContent = 'เกิดข้อผิดพลาด: ' + (err && err.message ? err.message : err);
+    $('infoError').classList.remove('hidden');
+  }
+
+  function show(stepId) {
+    ['step-info', 'step-loading', 'step-quiz', 'step-result'].forEach(function (id) {
+      $(id).classList.toggle('hidden', id !== stepId);
+    });
+    window.scrollTo(0, 0);
+  }
+</script>
+</body>
+</html>
