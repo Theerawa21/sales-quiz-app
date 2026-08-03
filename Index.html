@@ -227,6 +227,74 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     #questionsWrap { user-select: none; -webkit-user-select: none; }
+
+    h3 { font-size: 17px; margin: 0; font-weight: 800; }
+
+    .teacher-entry { display: flex; justify-content: center; margin-top: 4px; }
+    .teacher-link-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: transparent; color: var(--muted); box-shadow: none; width: auto;
+      font-size: 14px; font-weight: 700; padding: 8px 12px; margin-top: 0;
+    }
+    .teacher-link-btn:hover { color: var(--primary-dark); background: transparent; box-shadow: none; transform: none; }
+
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15,23,42,.55);
+      display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 50;
+    }
+    .modal-box {
+      background: var(--card); border-radius: 20px; padding: 28px;
+      max-width: 540px; width: 100%; max-height: 88vh; overflow-y: auto; position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+    .modal-close {
+      position: absolute; top: 14px; right: 14px; width: 36px; height: 36px; border-radius: 50%;
+      background: #f1f5f9; color: var(--muted); box-shadow: none; margin: 0; font-size: 20px; line-height: 1;
+      padding: 0; display: flex; align-items: center; justify-content: center;
+    }
+    .modal-close:hover { background: #e2e8f0; box-shadow: none; transform: none; }
+
+    .link-btn {
+      width: auto; background: transparent; color: var(--primary); box-shadow: none;
+      font-size: 14px; padding: 6px 10px; margin: 0; font-weight: 700;
+    }
+    .link-btn:hover { background: var(--primary-light); box-shadow: none; transform: none; }
+
+    .dash-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; }
+
+    .exam-toggle-card {
+      display: flex; align-items: center; justify-content: space-between;
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; margin-top: 18px;
+    }
+    .exam-toggle-label { font-weight: 700; font-size: 16px; }
+    .exam-toggle-status { font-size: 14px; margin-top: 2px; font-weight: 800; }
+    .exam-toggle-status.open { color: var(--success); }
+    .exam-toggle-status.closed { color: var(--danger); }
+
+    .toggle-switch {
+      width: 56px; height: 32px; border-radius: 999px; background: #cbd5e1; position: relative;
+      box-shadow: none; margin: 0; padding: 0; flex-shrink: 0; transition: background .2s;
+    }
+    .toggle-switch::after {
+      content: ''; position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%;
+      background: #fff; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.35);
+    }
+    .toggle-switch.on { background: var(--success); }
+    .toggle-switch.on::after { transform: translateX(24px); }
+    .toggle-switch:hover:not(:disabled) { transform: none; box-shadow: none; }
+
+    .teacher-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 16px; }
+    .stat-tile { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; }
+    .stat-tile .stat-num { font-size: 24px; font-weight: 800; color: var(--primary-dark); }
+    .stat-tile .stat-label { font-size: 13px; color: var(--muted); font-weight: 700; margin-top: 2px; }
+
+    .results-table-wrap { overflow-x: auto; margin-top: 12px; border: 1px solid var(--border); border-radius: 12px; }
+    .results-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .results-table th, .results-table td { padding: 10px 12px; text-align: left; white-space: nowrap; border-bottom: 1px solid var(--border); }
+    .results-table th { background: #f8fafc; font-weight: 700; color: var(--muted); }
+    .results-table tr:last-child td { border-bottom: none; }
+    .results-table .warn-cell { color: var(--danger); font-weight: 800; }
+    .results-empty { text-align: center; padding: 24px; color: var(--muted); font-size: 15px; }
   </style>
 </head>
 <body>
@@ -264,6 +332,8 @@
 
   <!-- STEP 1: ข้อมูลผู้เข้าสอบ -->
   <div id="step-info" class="card">
+    <div id="examClosedBanner" class="error hidden" style="margin-bottom:16px;"></div>
+
     <div class="field-label">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><circle cx="9" cy="10" r="2"></circle><path d="M15 10h4M15 14h4M6 16c0-1.7 1.3-3 3-3s3 1.3 3 3"></path></svg>
       รหัสประจำตัวนักเรียน
@@ -339,12 +409,60 @@
     <div id="reviewWrap" class="hidden" style="margin-top:16px;"></div>
   </div>
 
+  <div class="teacher-entry">
+    <button id="teacherLinkBtn" class="teacher-link-btn">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      สำหรับครูผู้สอน
+    </button>
+  </div>
+
+</div>
+
+<div id="teacherModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <button id="teacherCloseBtn" class="modal-close" aria-label="ปิด">&times;</button>
+
+    <div id="teacherLoginView">
+      <h2>เข้าสู่ระบบสำหรับครู</h2>
+      <div class="field-label">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        รหัสเข้าใช้งาน
+      </div>
+      <input type="password" id="teacherCodeInput" inputmode="numeric" autocomplete="off" placeholder="กรอกรหัสเข้าใช้งาน">
+      <button id="teacherLoginBtn">เข้าสู่ระบบ</button>
+      <div id="teacherLoginError" class="error hidden"></div>
+    </div>
+
+    <div id="teacherDashboardView" class="hidden">
+      <div class="dash-header">
+        <h2>แผงควบคุมสำหรับครู</h2>
+        <button id="teacherLogoutBtn" class="link-btn">ออกจากระบบ</button>
+      </div>
+
+      <div class="exam-toggle-card">
+        <div>
+          <div class="exam-toggle-label">สถานะข้อสอบ</div>
+          <div class="exam-toggle-status" id="examStatusText">กำลังตรวจสอบ...</div>
+        </div>
+        <button id="examToggleBtn" class="toggle-switch" data-open="0" aria-label="เปิด/ปิดข้อสอบ"></button>
+      </div>
+
+      <div class="teacher-stats-grid" id="teacherStatsGrid"></div>
+
+      <div class="dash-header" style="margin-top:22px;">
+        <h3>รายชื่อผู้ส่งข้อสอบแล้ว</h3>
+        <button id="refreshResultsBtn" class="link-btn">รีเฟรช</button>
+      </div>
+      <div id="resultsTableWrap" class="results-table-wrap"></div>
+    </div>
+  </div>
 </div>
 
 <script>
   var LETTERS = ['ก', 'ข', 'ค', 'ง'];
   var PASS_SCORE = 24; // เกณฑ์ผ่าน: 24 คะแนน จาก 40 (ร้อยละ 60)
   var PASS_PERCENT = 60;
+  var SUSPICIOUS_TAB_SWITCH_DISPLAY = 3; // ใช้ไฮไลต์แถวในตารางของครูเมื่อสลับหน้าจอตั้งแต่กี่ครั้งขึ้นไป
   var ICON_CHECK = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
   var ICON_ALERT = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
   var ICON_X = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
@@ -452,6 +570,11 @@
   });
 
   function onQuizLoaded(result) {
+    if (result.examClosed) {
+      show('step-info');
+      showExamClosedBanner();
+      return;
+    }
     if (result.alreadyTaken) {
       show('step-info');
       var box = $('studentPreview');
@@ -721,6 +844,168 @@
       if (idx < currentIdx) el.classList.add('done');
       else if (idx === currentIdx) el.classList.add('active');
     });
+  }
+
+  // ===== แบนเนอร์แจ้งว่าข้อสอบปิดอยู่ (แสดงบนหน้ากรอกรหัส) =====
+  function showExamClosedBanner() {
+    $('examClosedBanner').innerHTML = ICON_ALERT + '<span>ขณะนี้ข้อสอบปิดอยู่ กรุณาติดต่อครูผู้สอน</span>';
+    $('examClosedBanner').classList.remove('hidden');
+    $('inpStudentId').disabled = true;
+    $('btnStart').disabled = true;
+  }
+
+  function hideExamClosedBanner() {
+    $('examClosedBanner').classList.add('hidden');
+    $('inpStudentId').disabled = false;
+  }
+
+  try {
+    google.script.run
+      .withSuccessHandler(function (result) {
+        if (!result.examOpen) showExamClosedBanner();
+      })
+      .withFailureHandler(function () {})
+      .getExamStatus();
+  } catch (e) { /* เช่นตอนพรีวิวไฟล์นี้นอก Apps Script ที่ google.script.run ยังไม่มีอยู่ */ }
+
+  // ===== แผงควบคุมสำหรับครู =====
+  var teacherCode = null;
+
+  $('teacherLinkBtn').addEventListener('click', function () {
+    $('teacherModal').classList.remove('hidden');
+    $('teacherLoginView').classList.remove('hidden');
+    $('teacherDashboardView').classList.add('hidden');
+    $('teacherCodeInput').value = '';
+    $('teacherLoginError').classList.add('hidden');
+  });
+
+  $('teacherCloseBtn').addEventListener('click', closeTeacherModal);
+  $('teacherModal').addEventListener('click', function (e) {
+    if (e.target === $('teacherModal')) closeTeacherModal();
+  });
+
+  function closeTeacherModal() {
+    $('teacherModal').classList.add('hidden');
+  }
+
+  $('teacherCodeInput').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') $('teacherLoginBtn').click();
+  });
+
+  $('teacherLoginBtn').addEventListener('click', function () {
+    var code = $('teacherCodeInput').value.trim();
+    if (!code) return;
+    $('teacherLoginBtn').disabled = true;
+    google.script.run
+      .withSuccessHandler(function (result) {
+        $('teacherLoginBtn').disabled = false;
+        teacherCode = code;
+        $('teacherLoginView').classList.add('hidden');
+        $('teacherDashboardView').classList.remove('hidden');
+        renderExamToggle(result.examOpen);
+        loadTeacherResults();
+      })
+      .withFailureHandler(function (err) {
+        $('teacherLoginBtn').disabled = false;
+        $('teacherLoginError').textContent = (err && err.message) ? err.message : 'เข้าสู่ระบบไม่สำเร็จ';
+        $('teacherLoginError').classList.remove('hidden');
+      })
+      .teacherLogin({ code: code });
+  });
+
+  $('teacherLogoutBtn').addEventListener('click', function () {
+    teacherCode = null;
+    closeTeacherModal();
+  });
+
+  function renderExamToggle(isOpen) {
+    var btn = $('examToggleBtn');
+    btn.classList.toggle('on', !!isOpen);
+    btn.setAttribute('data-open', isOpen ? '1' : '0');
+    var statusEl = $('examStatusText');
+    statusEl.textContent = isOpen ? 'เปิดสอบอยู่' : 'ปิดสอบอยู่';
+    statusEl.className = 'exam-toggle-status ' + (isOpen ? 'open' : 'closed');
+    if (isOpen) hideExamClosedBanner(); else showExamClosedBanner();
+  }
+
+  $('examToggleBtn').addEventListener('click', function () {
+    if (!teacherCode) return;
+    var currentlyOpen = $('examToggleBtn').getAttribute('data-open') === '1';
+    $('examToggleBtn').disabled = true;
+    google.script.run
+      .withSuccessHandler(function (result) {
+        $('examToggleBtn').disabled = false;
+        renderExamToggle(result.examOpen);
+      })
+      .withFailureHandler(function (err) {
+        $('examToggleBtn').disabled = false;
+        alert((err && err.message) ? err.message : 'เกิดข้อผิดพลาด');
+      })
+      .setExamOpen({ code: teacherCode, isOpen: !currentlyOpen });
+  });
+
+  $('refreshResultsBtn').addEventListener('click', loadTeacherResults);
+
+  function loadTeacherResults() {
+    if (!teacherCode) return;
+    $('resultsTableWrap').innerHTML = '<div class="results-empty">กำลังโหลด...</div>';
+    google.script.run
+      .withSuccessHandler(function (result) {
+        renderTeacherStats(result.rows);
+        renderResultsTable(result.rows);
+      })
+      .withFailureHandler(function (err) {
+        $('resultsTableWrap').innerHTML = '<div class="results-empty">โหลดข้อมูลไม่สำเร็จ: ' + escapeHtml((err && err.message) ? err.message : String(err)) + '</div>';
+      })
+      .getResponses({ code: teacherCode });
+  }
+
+  function renderTeacherStats(rows) {
+    var count = rows.length;
+    var avg = count ? (rows.reduce(function (s, r) { return s + Number(r.percent || 0); }, 0) / count) : 0;
+    var passed = rows.filter(function (r) { return Number(r.percent || 0) >= PASS_PERCENT; }).length;
+    var suspicious = rows.filter(function (r) { return Number(r.tabSwitchCount || 0) >= SUSPICIOUS_TAB_SWITCH_DISPLAY; }).length;
+    var grid = $('teacherStatsGrid');
+    grid.innerHTML =
+      statTile(count, 'ผู้เข้าสอบ') +
+      statTile((Math.round(avg * 10) / 10) + '%', 'คะแนนเฉลี่ย') +
+      statTile(passed, 'ผ่านเกณฑ์') +
+      statTile(suspicious, 'สลับหน้าจอ&ge;' + SUSPICIOUS_TAB_SWITCH_DISPLAY + ' ครั้ง');
+  }
+
+  function statTile(num, label) {
+    return '<div class="stat-tile"><div class="stat-num">' + num + '</div><div class="stat-label">' + label + '</div></div>';
+  }
+
+  function renderResultsTable(rows) {
+    var wrap = $('resultsTableWrap');
+    if (!rows.length) {
+      wrap.innerHTML = '<div class="results-empty">ยังไม่มีนักเรียนส่งคำตอบ</div>';
+      return;
+    }
+    var html = '<table class="results-table"><thead><tr>' +
+      '<th>ชื่อ-นามสกุล</th><th>ชั้น</th><th>เลขที่</th><th>คะแนน</th><th>ร้อยละ</th><th>เวลาที่ใช้</th><th>สลับหน้าจอ</th><th>เวลาที่ส่ง</th>' +
+      '</tr></thead><tbody>';
+    rows.forEach(function (r) {
+      var mins = Math.floor((r.durationSec || 0) / 60);
+      var secs = (r.durationSec || 0) % 60;
+      var timeStr = mins + ':' + String(secs).padStart(2, '0');
+      var ts = r.timestamp ? new Date(r.timestamp) : null;
+      var tsStr = ts ? (ts.toLocaleDateString('th-TH') + ' ' + ts.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })) : '-';
+      var tabCellClass = Number(r.tabSwitchCount || 0) >= SUSPICIOUS_TAB_SWITCH_DISPLAY ? 'warn-cell' : '';
+      html += '<tr>' +
+        '<td>' + escapeHtml(String(r.name || '')) + '</td>' +
+        '<td>' + escapeHtml(String(r.className || '')) + '</td>' +
+        '<td>' + escapeHtml(String(r.seatNo || '')) + '</td>' +
+        '<td>' + r.score + '/' + r.total + '</td>' +
+        '<td>' + r.percent + '%</td>' +
+        '<td>' + timeStr + '</td>' +
+        '<td class="' + tabCellClass + '">' + (r.tabSwitchCount || 0) + '</td>' +
+        '<td>' + tsStr + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
   }
 
   updateStepsIndicator('step-info');

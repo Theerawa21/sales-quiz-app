@@ -11,6 +11,8 @@ var SHEET_QUESTIONS = 'Questions';
 var SHEET_RESPONSES = 'Responses';
 var SHEET_SUMMARY = 'สรุปคะแนน';
 var SHEET_STUDENTS = 'Students';
+var SHEET_SETTINGS = 'Settings';
+var TEACHER_ACCESS_CODE_DEFAULT = '211238'; // รหัสเข้าใช้งานสำหรับครู ค่าเริ่มต้น (แก้ทีหลังได้ที่ชีท Settings!B2 โดยไม่ต้องแก้โค้ด)
 var TOTAL_SETS = 5;
 var EXAM_DURATION_MIN = 40; // เวลาที่ให้ทำข้อสอบ (นาที) แก้ตรงนี้ที่เดียวพอ
 var TIME_GRACE_SEC = 60; // เผื่อเวลาความหน่วงของเครือข่ายก่อนจะตีตราว่า "เกินเวลา"
@@ -27,8 +29,22 @@ function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('ระบบทดสอบออนไลน์')
     .addItem('ตั้งค่าระบบ / โหลดข้อสอบใหม่ (Setup)', 'setupSpreadsheet')
+    .addSeparator()
+    .addItem('เปิดสอบ', 'openExamFromMenu_')
+    .addItem('ปิดสอบ', 'closeExamFromMenu_')
+    .addSeparator()
     .addItem('ล้างคะแนนทั้งหมด', 'clearResponses')
     .addToUi();
+}
+
+function openExamFromMenu_() {
+  setExamOpenState_(true);
+  SpreadsheetApp.getUi().alert('เปิดสอบแล้ว นักเรียนสามารถเริ่มทำแบบทดสอบได้');
+}
+
+function closeExamFromMenu_() {
+  setExamOpenState_(false);
+  SpreadsheetApp.getUi().alert('ปิดสอบแล้ว นักเรียนจะไม่สามารถเริ่มทำแบบทดสอบใหม่ได้ (คนที่ทำค้างอยู่ยังส่งคำตอบได้ตามปกติ)');
 }
 
 function setupSpreadsheet() {
@@ -37,6 +53,7 @@ function setupSpreadsheet() {
   setupStudentsSheet_(ss);
   setupResponsesSheet_(ss);
   setupSummarySheet_(ss);
+  setupSettingsSheet_(ss);
   SpreadsheetApp.getUi().alert(
     'ตั้งค่าระบบเรียบร้อยแล้ว!\n\n' +
     'ระบบป้องกันการทุจริตที่เปิดใช้งาน:\n' +
@@ -81,6 +98,100 @@ function setupStudentsSheet_(ss) {
   sh.setFrozenRows(1);
   sh.getRange(1, 1, 1, header.length).setFontWeight('bold').setBackground('#e69138').setFontColor('#ffffff');
   sh.autoResizeColumns(1, header.length);
+}
+
+// ชีท Settings เก็บสถานะเปิด/ปิดสอบ และรหัสเข้าใช้งานสำหรับครู
+// ตั้งใจไม่ลบชีทนี้ทิ้งเวลารัน Setup ซ้ำ เพื่อไม่ให้สถานะเปิด/ปิดสอบที่ครูตั้งไว้ถูกรีเซ็ต
+function setupSettingsSheet_(ss) {
+  var sh = ss.getSheetByName(SHEET_SETTINGS);
+  if (!sh) {
+    sh = ss.insertSheet(SHEET_SETTINGS);
+  }
+  if (sh.getRange('A1').getValue() !== 'สถานะข้อสอบ (เปิด/ปิด)') {
+    sh.getRange('A1').setValue('สถานะข้อสอบ (เปิด/ปิด)').setFontWeight('bold');
+    sh.getRange('B1').setValue('เปิด');
+    sh.getRange('A2').setValue('รหัสเข้าใช้งานสำหรับครู').setFontWeight('bold');
+    sh.getRange('B2').setValue(TEACHER_ACCESS_CODE_DEFAULT).setNumberFormat('@');
+    sh.getRange('A1:B2').setFontSize(12);
+    sh.autoResizeColumns(1, 2);
+  }
+}
+
+function getTeacherCode_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName(SHEET_SETTINGS);
+  if (sh) {
+    var v = sh.getRange('B2').getValue();
+    if (v !== '' && v !== null && v !== undefined) return String(v).trim();
+  }
+  return TEACHER_ACCESS_CODE_DEFAULT;
+}
+
+function requireTeacher_(code) {
+  if (String(code || '').trim() !== getTeacherCode_()) {
+    throw new Error('รหัสเข้าใช้งานไม่ถูกต้อง');
+  }
+}
+
+function isExamOpen_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName(SHEET_SETTINGS);
+  if (!sh) return true; // ยังไม่เคยตั้งค่า ให้ถือว่าเปิดสอบตามปกติ
+  var v = sh.getRange('B1').getValue();
+  return String(v).trim() !== 'ปิด';
+}
+
+function setExamOpenState_(isOpen) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName(SHEET_SETTINGS);
+  if (!sh) {
+    setupSettingsSheet_(ss);
+    sh = ss.getSheetByName(SHEET_SETTINGS);
+  }
+  sh.getRange('B1').setValue(isOpen ? 'เปิด' : 'ปิด');
+}
+
+// เรียกได้โดยไม่ต้องมีรหัส ใช้แสดงแบนเนอร์ "ข้อสอบปิดอยู่" ให้นักเรียนเห็นตั้งแต่หน้าแรก
+function getExamStatus() {
+  return { examOpen: isExamOpen_() };
+}
+
+function teacherLogin(payload) {
+  requireTeacher_(payload.code);
+  return { ok: true, examOpen: isExamOpen_() };
+}
+
+function setExamOpen(payload) {
+  requireTeacher_(payload.code);
+  setExamOpenState_(!!payload.isOpen);
+  return { examOpen: isExamOpen_() };
+}
+
+// รายชื่อผู้ส่งข้อสอบแล้วทั้งหมด สำหรับแผงควบคุมครู (ไม่ส่งคอลัมน์รายละเอียดคำตอบ JSON กลับไป เพื่อลดขนาดข้อมูล)
+function getResponses(payload) {
+  requireTeacher_(payload.code);
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName(SHEET_RESPONSES);
+  if (!sh || sh.getLastRow() < 2) return { rows: [] };
+  var values = sh.getRange(2, 1, sh.getLastRow() - 1, 12).getValues();
+  var rows = values.map(function (r) {
+    return {
+      timestamp: (r[0] instanceof Date) ? r[0].toISOString() : String(r[0]),
+      studentId: r[1],
+      name: r[2],
+      className: r[3],
+      seatNo: r[4],
+      examCode: r[5],
+      score: r[6],
+      total: r[7],
+      percent: r[8],
+      durationSec: r[9],
+      tabSwitchCount: r[10],
+      timeStatus: r[11]
+    };
+  });
+  rows.sort(function (a, b) { return b.score - a.score; });
+  return { rows: rows };
 }
 
 function setupResponsesSheet_(ss) {
@@ -186,6 +297,14 @@ function apiDispatch_(action, payload) {
       return startQuiz(payload.studentId);
     case 'submitQuiz':
       return submitQuiz(payload);
+    case 'getExamStatus':
+      return getExamStatus();
+    case 'teacherLogin':
+      return teacherLogin(payload);
+    case 'setExamOpen':
+      return setExamOpen(payload);
+    case 'getResponses':
+      return getResponses(payload);
     default:
       throw new Error('ไม่รู้จักคำสั่ง: ' + action);
   }
@@ -266,6 +385,10 @@ function findAttempt_(studentId) {
 // จำกัดเวลาสอบ: บันทึกเวลาเริ่มไว้ฝั่งเซิร์ฟเวอร์ (CacheService) เพื่อคำนวณเวลาที่ใช้จริงตอนส่งคำตอบ
 // ไม่พึ่งเวลาที่ส่งมาจากเบราว์เซอร์อย่างเดียว ป้องกันการปรับเวลาในนาฬิกาฝั่งลูกข่าย
 function startQuiz(studentId) {
+  if (!isExamOpen_()) {
+    return { examClosed: true };
+  }
+
   var student = lookupStudent(studentId);
   if (!student.found) {
     throw new Error('ไม่พบรหัสประจำตัวนักเรียนนี้ในระบบ');
