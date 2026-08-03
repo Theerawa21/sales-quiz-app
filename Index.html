@@ -5,151 +5,286 @@
   <meta charset="utf-8">
   <style>
     :root {
-      --primary: #4a86e8;
-      --primary-dark: #3a6fc4;
-      --green: #38761d;
-      --red: #cc0000;
-      --bg: #f4f6f9;
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --primary-light: #eef2ff;
+      --accent: #7c3aed;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --warning: #d97706;
+      --warning-light: #fef3c7;
+      --bg: #eef1f8;
       --card: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --border: #e2e6ea;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #e2e8f0;
     }
     * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
     body {
-      font-family: "TH Sarabun New", "Sarabun", "Segoe UI", Tahoma, sans-serif;
+      font-family: "Noto Sans Thai", "Sarabun", "Segoe UI", Tahoma, sans-serif;
       background: var(--bg);
-      color: #000000;
-      margin: 0;
-      padding: 16px;
+      color: var(--text);
       font-size: 19px;
       line-height: 1.6;
+      padding-bottom: 40px;
     }
-    .container { max-width: 720px; margin: 0 auto; }
+
+    .hero {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: #fff;
+      padding: 28px 16px 40px;
+      border-radius: 0 0 28px 28px;
+      box-shadow: 0 6px 20px rgba(79,70,229,.25);
+    }
+    .hero-inner { max-width: 720px; margin: 0 auto; display: flex; align-items: center; gap: 16px; }
+    .hero-icon {
+      width: 56px; height: 56px; border-radius: 16px; background: rgba(255,255,255,.18);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .hero h1 { margin: 0 0 4px; font-size: 25px; font-weight: 800; color: #fff; }
+    .hero p { margin: 0; font-size: 16px; color: rgba(255,255,255,.9); }
+
+    .container { max-width: 720px; margin: -22px auto 0; padding: 0 16px; position: relative; }
+
+    .steps {
+      display: flex; align-items: center; justify-content: center;
+      background: var(--card); border-radius: 16px; padding: 16px 8px; margin-bottom: 16px;
+      box-shadow: 0 2px 10px rgba(15,23,42,.08);
+    }
+    .step { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+    .step-num {
+      width: 32px; height: 32px; border-radius: 50%; background: #e2e8f0; color: #64748b;
+      display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px;
+      transition: all .2s;
+    }
+    .step-label { font-size: 12px; color: #64748b; font-weight: 700; }
+    .step.active .step-num { background: var(--primary); color: #fff; }
+    .step.active .step-label { color: var(--primary-dark); }
+    .step.done .step-num { background: var(--success); color: #fff; }
+    .step.done .step-label { color: var(--success); }
+    .step-line { flex: 0 0 32px; height: 2px; background: #e2e8f0; margin-bottom: 20px; }
+
     .card {
       background: var(--card);
-      border-radius: 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-      padding: 24px;
+      border-radius: 18px;
+      box-shadow: 0 2px 12px rgba(15,23,42,.06);
+      padding: 26px;
       margin-bottom: 16px;
     }
-    h1 { font-size: 30px; margin: 0 0 8px; color: #000000; font-weight: 800; }
-    h2 { font-size: 24px; margin: 0 0 12px; color: #000000; }
-    p.sub { color: #000000; margin-top: 0; font-size: 19px; }
-    label { display: block; font-weight: 700; margin: 18px 0 8px; color: #000000; font-size: 20px; }
-    input[type=text], select {
+    h2 { font-size: 22px; margin: 0 0 14px; font-weight: 800; }
+
+    .field-label {
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 700; margin: 4px 0 10px; font-size: 18px;
+    }
+    .field-label svg { color: var(--primary); }
+
+    input[type=text] {
       width: 100%;
-      padding: 14px 14px;
+      padding: 14px 16px;
       border: 2px solid var(--border);
-      border-radius: 8px;
+      border-radius: 12px;
       font-size: 22px;
       font-family: inherit;
-      color: #000000;
+      color: var(--text);
+      transition: border-color .15s, box-shadow .15s;
     }
+    input[type=text]:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
+
     button {
       font-family: inherit;
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 700;
-      padding: 16px 20px;
-      border-radius: 8px;
+      padding: 15px 20px;
+      border-radius: 12px;
       border: none;
       cursor: pointer;
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
       color: #fff;
       width: 100%;
       margin-top: 20px;
+      box-shadow: 0 4px 14px rgba(79,70,229,.35);
+      transition: transform .12s, box-shadow .12s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
     }
-    button:hover { background: var(--primary-dark); }
-    button:disabled { background: #a9b6c8; cursor: not-allowed; }
-    .error { color: var(--red); margin-top: 10px; font-size: 16px; font-weight: 700; }
+    button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(79,70,229,.4); }
+    button:active:not(:disabled) { transform: translateY(0); }
+    button:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; }
+    button.secondary { background: var(--primary-light); color: var(--primary-dark); box-shadow: none; }
+    button.secondary:hover:not(:disabled) { background: #e0e7ff; box-shadow: none; }
+
+    .error {
+      display: flex; align-items: center; gap: 8px;
+      color: var(--danger); margin-top: 12px; font-size: 16px; font-weight: 700;
+      background: var(--danger-light); padding: 10px 14px; border-radius: 10px;
+    }
     .hidden { display: none !important; }
 
-    /* Quiz header bar */
-    .quiz-topbar {
-      position: sticky; top: 0; z-index: 5;
-      background: var(--card);
-      border-radius: 12px;
-      padding: 12px 16px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-      margin-bottom: 16px;
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
-    }
-    .quiz-topbar .badge {
-      background: #eef3fc; color: #000000;
-      padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 16px;
-    }
-    .quiz-topbar .timer { font-variant-numeric: tabular-nums; color: #000000; font-size: 18px; font-weight: 700; }
-    .progress-bar { height: 8px; background: #e5e9f0; border-radius: 999px; overflow: hidden; margin-top: 8px; }
-    .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width .2s; }
-
-    .question {
-      border-bottom: 1px solid var(--border);
-      padding: 18px 0;
-    }
-    .question:last-child { border-bottom: none; }
-    .question .qtext { font-weight: 700; margin-bottom: 12px; color: #000000; font-size: 20px; }
-    .choice {
+    .footer-note {
       display: flex; align-items: flex-start; gap: 10px;
-      padding: 10px 10px; border-radius: 8px; cursor: pointer;
-      font-size: 19px; color: #000000;
+      text-align: left; color: var(--muted); font-size: 15px; margin-top: 18px; line-height: 1.6;
+      background: #f8fafc; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border);
     }
-    .choice:hover { background: #f7f9fc; }
-    .choice input { margin-top: 4px; width: 18px; height: 18px; }
-    .choice .letter { font-weight: 700; color: var(--primary-dark); min-width: 22px; }
+    .footer-note svg { flex-shrink: 0; margin-top: 2px; color: var(--primary); }
 
-    /* Result screen */
-    .score-big { font-size: 48px; font-weight: 800; color: var(--primary-dark); text-align: center; }
-    .score-sub { text-align: center; color: #000000; margin-bottom: 6px; font-size: 19px; }
-    .pass { color: var(--green); }
-    .fail { color: var(--red); }
-    .review-item { border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
-    .review-item.correct { background: #eaf6e6; }
-    .review-item.wrong { background: #fdecea; }
-    .review-item .rq { font-weight: 700; margin-bottom: 6px; color: #000000; font-size: 19px; }
-    .review-item .rline { font-size: 17px; color: #000000; }
-    .review-item .rline.correct-ans { color: var(--green); font-weight: 700; }
-    .review-item .rline.wrong-ans { color: var(--red); font-weight: 700; }
-    .loading { text-align: center; padding: 40px 0; color: #000000; font-size: 19px; }
+    .student-preview { display: flex; align-items: flex-start; gap: 12px; margin-top: 14px; padding: 16px; border-radius: 14px; font-size: 18px; }
+    .student-preview svg { flex-shrink: 0; margin-top: 2px; }
+    .student-preview.found { background: var(--success-light); border: 2px solid #bbf0cf; color: #14532d; }
+    .student-preview.found svg { color: var(--success); }
+    .student-preview.found .name { font-weight: 800; font-size: 19px; }
+    .student-preview.found .meta { color: #166534; font-size: 15px; margin-top: 3px; }
+    .student-preview.notfound { background: var(--danger-light); border: 2px solid #fbc7c7; color: #7f1d1d; font-weight: 600; }
+    .student-preview.notfound svg { color: var(--danger); }
+    .student-preview.taken { background: var(--warning-light); border: 2px solid #fde3a0; color: #78350f; font-weight: 600; }
+    .student-preview.taken svg { color: var(--warning); }
+
+    .student-searching {
+      display: flex; align-items: center; gap: 10px;
+      color: var(--muted); font-size: 16px; margin-top: 14px; font-weight: 600;
+    }
+    .dot-pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); animation: pulse 1s infinite ease-in-out; }
+    @keyframes pulse { 0%, 100% { opacity: .3; } 50% { opacity: 1; } }
+
+    .quiz-topbar {
+      position: sticky; top: 12px; z-index: 5;
+      background: var(--card);
+      border-radius: 16px;
+      padding: 14px 18px;
+      box-shadow: 0 4px 16px rgba(15,23,42,.1);
+      margin-bottom: 16px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--primary-light); color: var(--primary-dark);
+      padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 15px;
+    }
+    .badge.warning { background: var(--danger-light); color: var(--danger); }
+    .timer { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; color: var(--text); font-size: 19px; font-weight: 800; }
+    .timer.warning { color: var(--danger); }
+    .progress-bar { height: 8px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin-top: 10px; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); width: 0%; transition: width .25s; }
+
+    .question { border-bottom: 1px solid var(--border); padding: 20px 0; }
+    .question:first-child { padding-top: 4px; }
+    .question:last-child { border-bottom: none; }
+    .qtext { display: flex; gap: 10px; font-weight: 700; margin-bottom: 14px; color: var(--text); font-size: 19px; }
+    .qnum {
+      flex-shrink: 0; width: 30px; height: 30px; border-radius: 9px; background: var(--primary-light); color: var(--primary-dark);
+      display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800;
+    }
+    .choice {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 14px; border-radius: 12px; cursor: pointer;
+      font-size: 18px; color: var(--text);
+      border: 2px solid var(--border); margin-bottom: 8px;
+      transition: border-color .15s, background .15s;
+    }
+    .choice:hover { border-color: #c7d2fe; background: #f8faff; }
+    .choice.selected { border-color: var(--primary); background: var(--primary-light); }
+    .choice input { width: 20px; height: 20px; accent-color: var(--primary); flex-shrink: 0; }
+    .choice .letter { font-weight: 800; color: var(--primary-dark); min-width: 20px; }
+
+    .score-ring-wrap { display: flex; justify-content: center; margin: 6px 0 16px; }
+    .score-ring {
+      width: 160px; height: 160px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; flex-direction: column;
+      background: conic-gradient(var(--primary) calc(var(--pct, 0) * 1%), #e2e8f0 0);
+      position: relative;
+    }
+    .score-ring::before {
+      content: ''; position: absolute; width: 128px; height: 128px; border-radius: 50%; background: var(--card);
+    }
+    .score-ring .score-num { position: relative; font-size: 34px; font-weight: 800; color: var(--text); }
+    .score-ring .score-frac { position: relative; font-size: 14px; color: var(--muted); font-weight: 700; }
+
+    .result-badge {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      font-size: 18px; font-weight: 800; padding: 10px 16px; border-radius: 12px; margin: 0 auto 6px; max-width: 300px;
+    }
+    .result-badge.pass { background: var(--success-light); color: #14532d; }
+    .result-badge.fail { background: var(--danger-light); color: #7f1d1d; }
+
+    .review-item { display: flex; gap: 12px; border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
+    .review-item svg { flex-shrink: 0; margin-top: 2px; }
+    .review-item.correct { background: var(--success-light); }
+    .review-item.correct svg { color: var(--success); }
+    .review-item.wrong { background: var(--danger-light); }
+    .review-item.wrong svg { color: var(--danger); }
+    .review-item .rq { font-weight: 800; margin-bottom: 6px; color: var(--text); font-size: 18px; }
+    .review-item .rline { font-size: 16px; color: var(--text); }
+    .review-item .rline.correct-ans { color: #15803d; font-weight: 700; }
+    .review-item .rline.wrong-ans { color: #b91c1c; font-weight: 700; }
+
+    .loading { text-align: center; padding: 50px 0; color: var(--text); font-size: 19px; font-weight: 600; }
     .spinner {
-      width: 32px; height: 32px; border: 3px solid #dfe6f0; border-top-color: var(--primary);
-      border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px;
+      width: 40px; height: 40px; border: 4px solid var(--primary-light); border-top-color: var(--primary);
+      border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 16px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .footer-note { text-align: center; color: #000000; font-size: 17px; margin-top: 12px; line-height: 1.6; }
-
-    .student-searching { color: #000000; font-size: 17px; margin-top: 10px; font-weight: 600; }
-    .student-preview {
-      margin-top: 10px; padding: 14px 16px; border-radius: 8px; font-size: 18px;
-    }
-    .student-preview.found { background: #eaf6e6; border: 2px solid #c5e6bb; }
-    .student-preview.found .name { font-weight: 800; color: var(--green); font-size: 20px; }
-    .student-preview.found .meta { color: #000000; font-size: 17px; margin-top: 4px; }
-    .student-preview.notfound { background: #fdecea; border: 2px solid #f5c2bd; color: #7a0000; font-weight: 600; }
-    .student-preview.taken { background: #fff4e5; border: 2px solid #f5d8a8; color: #5c3200; font-weight: 600; }
-
-    .timer.warning { color: var(--red); font-weight: 700; }
-    .badge.warning { background: #fdecea; color: var(--red); }
 
     #questionsWrap { user-select: none; -webkit-user-select: none; }
   </style>
 </head>
 <body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-icon">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="13" y2="17"></line></svg>
+    </div>
+    <div>
+      <h1>แบบทดสอบออนไลน์</h1>
+      <p>การขายสำหรับนักธุรกิจมืออาชีพ &middot; หน่วยที่ 1&ndash;2 ส่วนประสมทางการตลาด 4P</p>
+    </div>
+  </div>
+</header>
+
 <div class="container">
+
+  <div class="steps" id="stepsIndicator">
+    <div class="step" data-step="info">
+      <div class="step-num">1</div>
+      <div class="step-label">กรอกรหัส</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step" data-step="quiz">
+      <div class="step-num">2</div>
+      <div class="step-label">ทำข้อสอบ</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step" data-step="result">
+      <div class="step-num">3</div>
+      <div class="step-label">ผลคะแนน</div>
+    </div>
+  </div>
 
   <!-- STEP 1: ข้อมูลผู้เข้าสอบ -->
   <div id="step-info" class="card">
-    <h1>แบบทดสอบออนไลน์</h1>
-    <p class="sub">รายวิชา การขายสำหรับนักธุรกิจมืออาชีพ &middot; หน่วยที่ 1&ndash;2 ส่วนประสมทางการตลาด 4P</p>
-
-    <label for="inpStudentId">รหัสประจำตัวนักเรียน</label>
+    <div class="field-label">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><circle cx="9" cy="10" r="2"></circle><path d="M15 10h4M15 14h4M6 16c0-1.7 1.3-3 3-3s3 1.3 3 3"></path></svg>
+      รหัสประจำตัวนักเรียน
+    </div>
     <input type="text" id="inpStudentId" placeholder="เช่น 15140" inputmode="numeric" autocomplete="off">
 
     <div id="studentPreview" class="student-preview hidden"></div>
-    <div id="studentSearching" class="student-searching hidden">กำลังค้นหา...</div>
+    <div id="studentSearching" class="student-searching hidden">
+      <span class="dot-pulse"></span> กำลังค้นหา...
+    </div>
 
-    <button id="btnStart" disabled>เริ่มทำแบบทดสอบ</button>
+    <button id="btnStart" disabled>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+      เริ่มทำแบบทดสอบ
+    </button>
     <div id="infoError" class="error hidden"></div>
-    <p class="footer-note">กรอกรหัสประจำตัวนักเรียนแล้วระบบจะแสดงชื่อ&ndash;ชั้น&ndash;เลขที่ให้ตรวจสอบก่อนเริ่มสอบ<br>เวลาทำข้อสอบ 40 นาที ทำได้คนละ 1 ครั้งเท่านั้น &middot; ระบบสุ่มลำดับข้อและตัวเลือกไม่ซ้ำกันในแต่ละคนเพื่อป้องกันการทุจริต</p>
+
+    <div class="footer-note">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      <span>กรอกรหัสประจำตัวนักเรียนแล้วระบบจะแสดงชื่อ&ndash;ชั้น&ndash;เลขที่ให้ตรวจสอบก่อนเริ่มสอบ<br>เวลาทำข้อสอบ 40 นาที ทำได้คนละ 1 ครั้งเท่านั้น &middot; ระบบสุ่มลำดับข้อและตัวเลือกไม่ซ้ำกันในแต่ละคนเพื่อป้องกันการทุจริต</span>
+    </div>
   </div>
 
   <!-- LOADING -->
@@ -168,14 +303,20 @@
         <span class="badge" id="answeredBadge" style="margin-left:6px;">ตอบแล้ว 0/40</span>
         <span class="badge hidden" id="tabSwitchBadge" style="margin-left:6px;">สลับหน้าจอ 0 ครั้ง</span>
       </div>
-      <div class="timer" id="timerDisplay">เหลือเวลา 40:00</div>
+      <div class="timer" id="timerDisplay">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15.5 14"></polyline></svg>
+        เหลือเวลา 40:00
+      </div>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
     <div class="card" style="margin-top:16px;" id="questionsWrap"></div>
 
     <div class="card">
-      <button id="btnSubmit">ส่งคำตอบ</button>
+      <button id="btnSubmit">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        ส่งคำตอบ
+      </button>
       <div id="quizError" class="error hidden"></div>
     </div>
   </div>
@@ -183,11 +324,18 @@
   <!-- STEP 3: ผลคะแนน -->
   <div id="step-result" class="card hidden">
     <h2>ผลการทดสอบ</h2>
-    <div class="score-big"><span id="resScore">0</span>/<span id="resTotal">40</span></div>
-    <div class="score-sub" id="resPercent">0%</div>
-    <div class="score-sub" id="resPassFail"></div>
+    <div class="score-ring-wrap">
+      <div class="score-ring" id="scoreRing">
+        <div class="score-num"><span id="resScore">0</span>/<span id="resTotal">40</span></div>
+        <div class="score-frac" id="resPercent">0%</div>
+      </div>
+    </div>
+    <div id="resPassFail"></div>
 
-    <button id="btnToggleReview" style="background:#eef3fc; color:#3a6fc4;">แสดงเฉลยและเปรียบเทียบคำตอบ</button>
+    <button id="btnToggleReview" class="secondary">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+      แสดงเฉลยและเปรียบเทียบคำตอบ
+    </button>
     <div id="reviewWrap" class="hidden" style="margin-top:16px;"></div>
   </div>
 
@@ -195,6 +343,12 @@
 
 <script>
   var LETTERS = ['ก', 'ข', 'ค', 'ง'];
+  var PASS_SCORE = 24; // เกณฑ์ผ่าน: 24 คะแนน จาก 40 (ร้อยละ 60)
+  var PASS_PERCENT = 60;
+  var ICON_CHECK = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
+  var ICON_ALERT = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+  var ICON_X = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+
   var state = {
     studentId: null,
     fullName: null,
@@ -249,7 +403,7 @@
       .withFailureHandler(function (err) {
         if (seq !== lookupSeq) return;
         $('studentSearching').classList.add('hidden');
-        $('infoError').textContent = 'เกิดข้อผิดพลาดในการค้นหา: ' + (err && err.message ? err.message : err);
+        $('infoError').innerHTML = ICON_ALERT + '<span>เกิดข้อผิดพลาดในการค้นหา: ' + escapeHtml(err && err.message ? err.message : String(err)) + '</span>';
         $('infoError').classList.remove('hidden');
       })
       .lookupStudent(id);
@@ -260,8 +414,9 @@
     box.classList.remove('hidden');
     if (result.found) {
       box.className = 'student-preview found';
-      box.innerHTML = '<div class="name">' + escapeHtml(result.fullName) + '</div>' +
-        '<div class="meta">ชั้น ' + escapeHtml(String(result.className)) + ' &middot; เลขที่ ' + escapeHtml(String(result.seatNo)) + '</div>';
+      box.innerHTML = ICON_CHECK +
+        '<div><div class="name">' + escapeHtml(result.fullName) + '</div>' +
+        '<div class="meta">ชั้น ' + escapeHtml(String(result.className)) + ' &middot; เลขที่ ' + escapeHtml(String(result.seatNo)) + '</div></div>';
       state.studentId = result.studentId;
       state.fullName = result.fullName;
       state.className = result.className;
@@ -270,7 +425,7 @@
       $('infoError').classList.add('hidden');
     } else {
       box.className = 'student-preview notfound';
-      box.textContent = 'ไม่พบรหัสประจำตัวนักเรียนนี้ในระบบ กรุณาตรวจสอบตัวเลขอีกครั้ง หรือแจ้งครูผู้สอน';
+      box.innerHTML = ICON_ALERT + '<div>ไม่พบรหัสประจำตัวนักเรียนนี้ในระบบ กรุณาตรวจสอบตัวเลขอีกครั้ง หรือแจ้งครูผู้สอน</div>';
       resetStudentSelection();
     }
   }
@@ -283,7 +438,7 @@
 
   $('btnStart').addEventListener('click', function () {
     if (!state.studentId) {
-      $('infoError').textContent = 'กรุณากรอกรหัสประจำตัวนักเรียนที่ถูกต้องก่อนเริ่มสอบ';
+      $('infoError').innerHTML = ICON_ALERT + '<span>กรุณากรอกรหัสประจำตัวนักเรียนที่ถูกต้องก่อนเริ่มสอบ</span>';
       $('infoError').classList.remove('hidden');
       return;
     }
@@ -302,8 +457,9 @@
       var box = $('studentPreview');
       box.classList.remove('hidden');
       box.className = 'student-preview taken';
-      box.innerHTML = '<div class="name">คุณทำแบบทดสอบนี้ไปแล้ว ทำได้เพียงคนละ 1 ครั้ง</div>' +
-        '<div class="meta">คะแนนที่ได้: ' + result.score + '/' + result.total + ' (' + result.percent + '%)</div>';
+      box.innerHTML = ICON_ALERT +
+        '<div><div class="name">คุณทำแบบทดสอบนี้ไปแล้ว ทำได้เพียงคนละ 1 ครั้ง</div>' +
+        '<div class="meta">คะแนนที่ได้: ' + result.score + '/' + result.total + ' (' + result.percent + '%)</div></div>';
       $('btnStart').disabled = true;
       return;
     }
@@ -335,7 +491,13 @@
 
       var qt = document.createElement('div');
       qt.className = 'qtext';
-      qt.textContent = 'ข้อ ' + (qIdx + 1) + '. ' + q.question;
+      var qnum = document.createElement('span');
+      qnum.className = 'qnum';
+      qnum.textContent = qIdx + 1;
+      var qtext = document.createElement('span');
+      qtext.textContent = q.question;
+      qt.appendChild(qnum);
+      qt.appendChild(qtext);
       qDiv.appendChild(qt);
 
       q.choices.forEach(function (choiceText, idx) {
@@ -348,6 +510,10 @@
         input.value = idx;
         input.addEventListener('change', function () {
           state.answers[q.origNo] = choiceText;
+          Array.prototype.forEach.call(qDiv.querySelectorAll('.choice'), function (c) {
+            c.classList.remove('selected');
+          });
+          label.classList.add('selected');
           updateProgress();
         });
 
@@ -394,8 +560,10 @@
     var remaining = Math.max(0, Math.round((state.deadlineTs - Date.now()) / 1000));
     var mm = String(Math.floor(remaining / 60)).padStart(2, '0');
     var ss = String(remaining % 60).padStart(2, '0');
-    $('timerDisplay').textContent = 'เหลือเวลา ' + mm + ':' + ss;
-    $('timerDisplay').classList.toggle('warning', remaining <= 5 * 60);
+    var warn = remaining <= 5 * 60;
+    var el = $('timerDisplay');
+    el.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15.5 14"></polyline></svg> เหลือเวลา ' + mm + ':' + ss;
+    el.classList.toggle('warning', warn);
   }
 
   $('btnSubmit').addEventListener('click', function () {
@@ -428,7 +596,7 @@
         state.quizActive = true;
         $('btnSubmit').disabled = false;
         $('btnSubmit').textContent = 'ส่งคำตอบ';
-        $('quizError').textContent = 'เกิดข้อผิดพลาด: ' + (err && err.message ? err.message : err);
+        $('quizError').innerHTML = ICON_ALERT + '<span>เกิดข้อผิดพลาด: ' + escapeHtml(err && err.message ? err.message : String(err)) + '</span>';
         $('quizError').classList.remove('hidden');
       })
       .submitQuiz({
@@ -471,11 +639,13 @@
     $('resScore').textContent = result.score;
     $('resTotal').textContent = result.total;
     $('resPercent').textContent = result.percent + '%';
+    $('scoreRing').style.setProperty('--pct', result.percent);
 
-    var passed = result.percent >= 50;
+    var passed = result.percent >= PASS_PERCENT;
     var pf = $('resPassFail');
-    pf.textContent = passed ? 'ผ่านเกณฑ์ (50%)' : 'ไม่ผ่านเกณฑ์ (50%)';
-    pf.className = 'score-sub ' + (passed ? 'pass' : 'fail');
+    pf.innerHTML = '<div class="result-badge ' + (passed ? 'pass' : 'fail') + '">' +
+      (passed ? ICON_CHECK : ICON_X) +
+      '<span>' + (passed ? 'ผ่านเกณฑ์' : 'ไม่ผ่านเกณฑ์') + ' (' + PASS_SCORE + ' คะแนน หรือร้อยละ ' + PASS_PERCENT + ')</span></div>';
 
     if (result.detail && result.detail.length) {
       buildReview(result.detail);
@@ -493,24 +663,28 @@
     detail.forEach(function (d, idx) {
       var div = document.createElement('div');
       div.className = 'review-item ' + (d.isCorrect ? 'correct' : 'wrong');
+      div.innerHTML = (d.isCorrect ? ICON_CHECK : ICON_X);
+
+      var body = document.createElement('div');
 
       var rq = document.createElement('div');
       rq.className = 'rq';
       rq.textContent = 'ข้อ ' + (idx + 1) + '. ' + d.question;
-      div.appendChild(rq);
+      body.appendChild(rq);
 
       var yourAns = document.createElement('div');
       yourAns.className = 'rline ' + (d.isCorrect ? 'correct-ans' : 'wrong-ans');
       yourAns.textContent = 'คำตอบของคุณ: ' + (d.chosenText != null ? d.chosenText : '(ไม่ได้ตอบ)');
-      div.appendChild(yourAns);
+      body.appendChild(yourAns);
 
       if (!d.isCorrect) {
         var correctAns = document.createElement('div');
         correctAns.className = 'rline correct-ans';
         correctAns.textContent = 'เฉลย: ' + d.correctText;
-        div.appendChild(correctAns);
+        body.appendChild(correctAns);
       }
 
+      div.appendChild(body);
       wrap.appendChild(div);
     });
   }
@@ -518,14 +692,14 @@
   $('btnToggleReview').addEventListener('click', function () {
     var w = $('reviewWrap');
     w.classList.toggle('hidden');
-    $('btnToggleReview').textContent = w.classList.contains('hidden')
-      ? 'แสดงเฉลยและเปรียบเทียบคำตอบ'
-      : 'ซ่อนเฉลย';
+    var expanded = !w.classList.contains('hidden');
+    $('btnToggleReview').innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>' +
+      (expanded ? 'ซ่อนเฉลย' : 'แสดงเฉลยและเปรียบเทียบคำตอบ');
   });
 
   function onServerError(err) {
     show('step-info');
-    $('infoError').textContent = 'เกิดข้อผิดพลาด: ' + (err && err.message ? err.message : err);
+    $('infoError').innerHTML = ICON_ALERT + '<span>เกิดข้อผิดพลาด: ' + escapeHtml(err && err.message ? err.message : String(err)) + '</span>';
     $('infoError').classList.remove('hidden');
   }
 
@@ -533,8 +707,23 @@
     ['step-info', 'step-loading', 'step-quiz', 'step-result'].forEach(function (id) {
       $(id).classList.toggle('hidden', id !== stepId);
     });
+    updateStepsIndicator(stepId);
     window.scrollTo(0, 0);
   }
+
+  function updateStepsIndicator(stepId) {
+    var order = ['info', 'quiz', 'result'];
+    var current = stepId === 'step-loading' ? 'quiz' : stepId.replace('step-', '');
+    var currentIdx = order.indexOf(current);
+    order.forEach(function (key, idx) {
+      var el = document.querySelector('.step[data-step="' + key + '"]');
+      el.classList.remove('active', 'done');
+      if (idx < currentIdx) el.classList.add('done');
+      else if (idx === currentIdx) el.classList.add('active');
+    });
+  }
+
+  updateStepsIndicator('step-info');
 </script>
 </body>
 </html>
