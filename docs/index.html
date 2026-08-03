@@ -93,6 +93,13 @@
       transition: border-color .15s, box-shadow .15s;
     }
     input[type=text]:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
+    input[type=password], input[type=search], select {
+      width: 100%; padding: 13px 14px; border: 2px solid var(--border); border-radius: 12px;
+      font: inherit; font-size: 17px; color: var(--text); background: #fff;
+    }
+    input[type=password]:focus, input[type=search]:focus, select:focus {
+      outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light);
+    }
 
     button {
       font-family: inherit;
@@ -308,9 +315,68 @@
     .teacher-message.error { background: var(--danger-light); color: #7f1d1d; }
     .delete-note { margin-top: 10px; color: var(--muted); font-size: 13px; }
     @media (max-width: 640px) {
-      .modal-box { padding: 22px 16px; }
+      html { -webkit-text-size-adjust: 100%; }
+      body { font-size: 16px; padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+      .hero { padding: 18px 14px 34px; border-radius: 0 0 20px 20px; }
+      .hero-inner { gap: 10px; align-items: flex-start; }
+      .hero-icon { width: 44px; height: 44px; border-radius: 13px; }
+      .hero-icon svg { width: 24px; height: 24px; }
+      .hero h1 { font-size: 20px; line-height: 1.3; margin-bottom: 2px; }
+      .hero p { font-size: 13px; line-height: 1.45; }
+      .container { margin-top: -17px; padding: 0 10px; }
+      .steps { padding: 10px 3px; margin-bottom: 10px; border-radius: 14px; }
+      .step { gap: 3px; }
+      .step-num { width: 28px; height: 28px; font-size: 13px; }
+      .step-label { font-size: 11px; }
+      .step-line { flex-basis: 18px; margin-bottom: 16px; }
+      .card { padding: 18px 14px; border-radius: 14px; margin-bottom: 10px; }
+      h2 { font-size: 20px; }
+      .field-label { font-size: 16px; }
+      input[type=text] { padding: 12px 14px; font-size: 19px; }
+      input[type=password], input[type=search], select { min-height: 48px; font-size: 16px; }
+      button { min-height: 48px; font-size: 17px; padding: 12px 15px; }
+      .footer-note { padding: 12px; font-size: 13px; line-height: 1.5; }
+      .student-preview { padding: 13px; font-size: 16px; }
+      .student-preview.found .name { font-size: 17px; }
+      .quiz-topbar { top: 4px; padding: 10px; border-radius: 13px; display: block; }
+      .quiz-topbar > div:first-child { display: flex; flex-wrap: wrap; gap: 5px; }
+      .badge { padding: 5px 9px; font-size: 12px; margin-left: 0 !important; }
+      .timer { width: 100%; justify-content: center; margin-top: 9px; padding: 7px; border-radius: 9px; background: #f8fafc; font-size: 17px; }
+      .question { padding: 17px 0; }
+      .qtext { font-size: 17px; gap: 8px; }
+      .qnum { width: 28px; height: 28px; }
+      .choice { min-height: 50px; padding: 11px 12px; gap: 10px; font-size: 16px; }
+      .choice input { width: 22px; height: 22px; }
+      .score-ring { width: 140px; height: 140px; }
+      .score-ring::before { width: 112px; height: 112px; }
+      .score-ring .score-num { font-size: 30px; }
+      .review-item { padding: 12px; }
+      .review-item .rq { font-size: 16px; }
+      .review-item .rline { font-size: 14px; }
+      .modal-overlay { align-items: flex-end; padding: 0; }
+      .modal-box { max-height: 94dvh; padding: 22px 14px calc(18px + env(safe-area-inset-bottom)); border-radius: 20px 20px 0 0; }
+      .modal-close { top: 10px; right: 10px; }
+      .dash-header { align-items: flex-start; padding-right: 36px; }
+      .dash-header h2 { font-size: 19px; margin-top: 5px; }
+      .link-btn { min-height: 42px; font-size: 14px; padding: 8px 10px; }
+      .teacher-nav { position: sticky; top: -1px; z-index: 3; margin: 12px 0; }
       .teacher-filters { grid-template-columns: 1fr; }
       .teacher-nav-btn { flex: 1; padding: 9px 8px; }
+      .exam-toggle-card { margin-top: 8px; padding: 14px; }
+      .teacher-stats-grid { gap: 8px; margin-top: 10px; }
+      .stat-tile { padding: 10px 6px; }
+      .stat-tile .stat-num { font-size: 22px; }
+      .stat-tile .stat-label { font-size: 12px; }
+      .results-table-wrap { overflow: visible; border: 0; }
+      .results-table, .results-table tbody, .results-table tr, .results-table td { display: block; width: 100%; }
+      .results-table thead { display: none; }
+      .results-table tr { margin-bottom: 12px; padding: 10px; border: 1px solid var(--border); border-radius: 13px; background: #fff; box-shadow: 0 2px 8px rgba(15,23,42,.06); }
+      .results-table td { display: grid; grid-template-columns: 108px minmax(0,1fr); gap: 8px; padding: 6px 3px; border: 0; white-space: normal; overflow-wrap: anywhere; }
+      .results-table td::before { content: attr(data-label); color: var(--muted); font-weight: 700; }
+      .results-table td:last-child { display: block; padding-top: 10px; }
+      .results-table td:last-child::before { display: none; }
+      .delete-result-btn { width: 100%; min-height: 44px; }
+      .results-empty { padding: 20px 10px; }
     }
   </style>
 </head>
@@ -1129,16 +1195,16 @@
       var tsStr = ts ? (ts.toLocaleDateString('th-TH') + ' ' + ts.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })) : '-';
       var tabCellClass = Number(r.tabSwitchCount || 0) >= SUSPICIOUS_TAB_SWITCH_DISPLAY ? 'warn-cell' : '';
       html += '<tr>' +
-        '<td>' + escapeHtml(String(r.studentId || '')) + '</td>' +
-        '<td>' + escapeHtml(String(r.name || '')) + '</td>' +
-        '<td>' + escapeHtml(String(r.className || '')) + '</td>' +
-        '<td>' + escapeHtml(String(r.seatNo || '')) + '</td>' +
-        '<td>' + r.score + '/' + r.total + '</td>' +
-        '<td>' + r.percent + '%</td>' +
-        '<td>' + timeStr + '</td>' +
-        '<td class="' + tabCellClass + '">' + (r.tabSwitchCount || 0) + '</td>' +
-        '<td>' + tsStr + '</td>' +
-        '<td><button class="delete-result-btn" data-student-id="' + encodeURIComponent(String(r.studentId || '')) + '" data-student-name="' + encodeURIComponent(String(r.name || '')) + '">ลบผลสอบ</button></td>' +
+        '<td data-label="รหัสนักเรียน">' + escapeHtml(String(r.studentId || '')) + '</td>' +
+        '<td data-label="ชื่อ-นามสกุล">' + escapeHtml(String(r.name || '')) + '</td>' +
+        '<td data-label="ชั้น">' + escapeHtml(String(r.className || '')) + '</td>' +
+        '<td data-label="เลขที่">' + escapeHtml(String(r.seatNo || '')) + '</td>' +
+        '<td data-label="คะแนน">' + r.score + '/' + r.total + '</td>' +
+        '<td data-label="ร้อยละ">' + r.percent + '%</td>' +
+        '<td data-label="เวลาที่ใช้">' + timeStr + '</td>' +
+        '<td data-label="สลับหน้าจอ" class="' + tabCellClass + '">' + (r.tabSwitchCount || 0) + '</td>' +
+        '<td data-label="เวลาที่ส่ง">' + tsStr + '</td>' +
+        '<td data-label="จัดการ"><button class="delete-result-btn" data-student-id="' + encodeURIComponent(String(r.studentId || '')) + '" data-student-name="' + encodeURIComponent(String(r.name || '')) + '">ลบผลสอบ</button></td>' +
         '</tr>';
     });
     html += '</tbody></table>';
