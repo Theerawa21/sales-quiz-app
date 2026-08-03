@@ -502,7 +502,17 @@
 
   // เรียก API ของ Apps Script (Code.gs: doGet/doPost) ผ่าน fetch()
   // POST ใช้ Content-Type: text/plain เพื่อเลี่ยง CORS preflight ที่ Apps Script ไม่รองรับ (สำคัญมาก ห้ามเปลี่ยนเป็น application/json)
+  // ลองซ้ำอัตโนมัติ 1 ครั้งเฉพาะกรณีเชื่อมต่อไม่สำเร็จชั่วคราว (transient) เพื่อไม่ให้ปัญหาเครือข่ายชั่ววูบ
+  // กลายเป็น error ที่นักเรียนต้องกดลองเองใหม่ (ไม่ retry กรณี error จากตรรกะจริง เช่น รหัสผ่านผิด)
   function callApi(action, payload, method) {
+    return callApiOnce_(action, payload, method).catch(function (err) {
+      if (!err || !err.transient) throw err;
+      return new Promise(function (resolve) { setTimeout(resolve, 600); })
+        .then(function () { return callApiOnce_(action, payload, method); });
+    });
+  }
+
+  function callApiOnce_(action, payload, method) {
     method = method || 'POST';
     if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PASTE_YOUR') === 0) {
       return Promise.reject(new Error('ยังไม่ได้ตั้งค่า APPS_SCRIPT_URL ในไฟล์ index.html'));
@@ -522,7 +532,16 @@
   }
 
   function parseApiResponse_(res) {
-    return res.json().then(function (json) {
+    return res.text().then(function (text) {
+      var json;
+      try {
+        json = JSON.parse(text);
+      } catch (e) {
+        // เซิร์ฟเวอร์ตอบกลับมาไม่ใช่ JSON (เช่น หน้า error ของ Google ระหว่างทาง) มักเป็นปัญหาชั่วคราว
+        var err = new Error('เชื่อมต่อกับเซิร์ฟเวอร์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง (ถ้ายังไม่ได้ ลองรีเฟรชหน้านี้)');
+        err.transient = true;
+        throw err;
+      }
       if (!json.ok) throw new Error(json.error || 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์');
       return json.data;
     });
