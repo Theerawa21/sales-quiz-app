@@ -894,7 +894,12 @@
 
   $('teacherLoginBtn').addEventListener('click', function () {
     var code = $('teacherCodeInput').value.trim();
-    if (!code) return;
+    if (!code) {
+      $('teacherLoginError').textContent = 'กรุณากรอกรหัสเข้าใช้งาน';
+      $('teacherLoginError').classList.remove('hidden');
+      return;
+    }
+    $('teacherLoginError').classList.add('hidden');
     $('teacherLoginBtn').disabled = true;
     google.script.run
       .withSuccessHandler(function (result) {
