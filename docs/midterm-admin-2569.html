@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#123b6d">
+<title>ระบบครูผู้สอน - สอบกลางภาค 1/2569</title>
+<style>
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{font-family:Sarabun,"Noto Sans Thai",system-ui,sans-serif;background:#f3f6fb;margin:0;color:#172033}.app{max-width:1100px;margin:auto;padding:14px 14px calc(28px + env(safe-area-inset-bottom))}.hero{background:linear-gradient(145deg,#123b6d,#1d5a97);color:#fff;border-radius:20px;padding:20px;box-shadow:0 10px 30px rgba(18,59,109,.18)}.hero small{opacity:.82}.hero h1{font-size:24px;line-height:1.35;margin:6px 0}.hero p{margin:0;opacity:.94}.card{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:16px;margin-top:14px;box-shadow:0 5px 20px rgba(30,55,90,.05)}label{font-weight:700}input,select,button{font:inherit}input,select{width:100%;min-height:48px;padding:10px 12px;border:1.5px solid #cbd5e1;border-radius:12px;background:#fff;outline:none}input:focus,select:focus{border-color:#1d5a97;box-shadow:0 0 0 3px rgba(29,90,151,.12)}button{min-height:48px;border:0;border-radius:12px;padding:10px 14px;background:#123b6d;color:#fff;font-weight:800;cursor:pointer}button:disabled{opacity:.55}.btn-full{width:100%}.secondary{background:#eef4fb;color:#123b6d}.danger{background:#b42318}.success{background:#067647}.hidden{display:none!important}.grid{display:grid;gap:10px}.stats{grid-template-columns:repeat(2,1fr)}.stat{background:#fff;border:1px solid #dfe6ef;border-radius:15px;padding:14px}.stat small{display:block;color:#667085;font-size:12px}.stat b{font-size:24px;color:#123b6d}.toolbar{display:grid;grid-template-columns:1fr;gap:8px}.status{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.pill{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;font-weight:800;font-size:13px}.pill.open{background:#ecfdf3;color:#067647}.pill.closed{background:#fef3f2;color:#b42318}.dot{width:8px;height:8px;border-radius:50%;background:currentColor}.muted{color:#667085;font-size:13px}.err{background:#fef3f2;border:1px solid #fecdca;color:#b42318;padding:12px;border-radius:12px;margin-top:10px}.ok{background:#ecfdf3;border:1px solid #abefc6;color:#067647;padding:12px;border-radius:12px;margin-top:10px}.table-wrap{overflow:auto;border:1px solid #e2e8f0;border-radius:14px;margin-top:10px}table{width:100%;border-collapse:collapse;min-width:860px;background:#fff}th,td{padding:11px 10px;border-bottom:1px solid #edf1f5;text-align:left;font-size:13px;vertical-align:top}th{background:#f8fafc;color:#344054;position:sticky;top:0;z-index:1}td.score{font-weight:800;color:#123b6d}.pass{color:#067647;font-weight:800}.fail{color:#b42318;font-weight:800}.actions{display:flex;gap:7px;flex-wrap:wrap}.actions button{min-height:38px;padding:7px 10px;font-size:12px}.section-title{font-size:18px;margin:0}.loginbox{max-width:460px;margin:28px auto}.search-row{display:grid;grid-template-columns:1fr;gap:8px}.empty{text-align:center;color:#98a2b3;padding:26px 8px}.footer{text-align:center;color:#98a2b3;font-size:12px;padding:14px}@media(min-width:760px){.stats{grid-template-columns:repeat(5,1fr)}.toolbar{grid-template-columns:1fr auto auto}.search-row{grid-template-columns:1fr 180px}.app{padding-top:20px}.hero h1{font-size:28px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="hero"><small>TEACHER CONTROL PANEL</small><h1>ระบบครูผู้สอน</h1><p>แบบทดสอบกลางภาคเรียนที่ 1 ปีการศึกษา 2569 • การขายสำหรับนักธุรกิจมืออาชีพ</p></header>
+
+<section id="loginCard" class="card loginbox">
+  <h2 class="section-title">เข้าสู่ระบบครู</h2>
+  <p class="muted">กรอกรหัส PIN ผู้ดูแลเพื่อดูคะแนนและควบคุมการเปิด–ปิดข้อสอบ</p>
+  <label for="pin">รหัส PIN</label>
+  <input id="pin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="กรอกรหัส PIN">
+  <button id="loginBtn" class="btn-full" style="margin-top:10px" onclick="login()">เข้าสู่ระบบ</button>
+  <div id="loginMsg"></div>
+</section>
+
+<main id="dashboard" class="hidden">
+  <section class="card">
+    <div class="status">
+      <div><h2 class="section-title">สถานะข้อสอบ</h2><div class="muted">ควบคุมการเข้าสอบของนักเรียนแบบทันที</div></div>
+      <span id="examBadge" class="pill closed"><span class="dot"></span><span>กำลังโหลด</span></span>
+    </div>
+    <div class="actions" style="margin-top:12px">
+      <button id="openBtn" class="success" onclick="toggleExam(true)">เปิดข้อสอบ</button>
+      <button id="closeBtn" class="danger" onclick="toggleExam(false)">ปิดข้อสอบ</button>
+      <button class="secondary" onclick="refreshDashboard()">รีเฟรชข้อมูล</button>
+    </div>
+    <div id="actionMsg"></div>
+  </section>
+
+  <section class="grid stats">
+    <div class="stat"><small>นักเรียนทั้งหมด</small><b id="sTotal">0</b></div>
+    <div class="stat"><small>ส่งแล้ว</small><b id="sSubmitted">0</b></div>
+    <div class="stat"><small>กำลังสอบ</small><b id="sActive">0</b></div>
+    <div class="stat"><small>ผ่านเกณฑ์</small><b id="sPass">0</b></div>
+    <div class="stat"><small>คะแนนเฉลี่ย</small><b id="sAvg">0%</b></div>
+  </section>
+
+  <section class="card">
+    <div class="toolbar">
+      <div><h2 class="section-title">ผลสอบนักเรียน</h2><div class="muted">ค้นหาจากรหัส ชื่อ หรือห้องเรียน</div></div>
+      <button class="secondary" onclick="downloadCsv()">ดาวน์โหลด CSV</button>
+      <button class="secondary" onclick="logout()">ออกจากระบบ</button>
+    </div>
+    <div class="search-row" style="margin-top:12px">
+      <input id="search" type="text" placeholder="ค้นหา รหัส / ชื่อ / ห้อง" oninput="renderRows()">
+      <select id="classFilter" onchange="renderRows()"><option value="">ทุกห้อง</option><option value="4/3">ม.4/3</option><option value="4/4">ม.4/4</option><option value="4/5">ม.4/5</option></select>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>เวลา</th><th>รหัส</th><th>ชื่อ-นามสกุล</th><th>ห้อง</th><th>คะแนน</th><th>%</th><th>เวลาใช้</th><th>ออกจอ</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody id="tbody"></tbody></table></div>
+  </section>
+</main>
+<div class="footer">ระบบครูผู้สอน • Google Apps Script + Google Sheets</div>
+</div>
+<script>
+const API='https://script.google.com/macros/s/AKfycbwKKaDYzdgEAo8zcXMwBGzrWUTPJYUDc3ESUNFTM4s2Dw1Xr1LGaHSNOrjbzQkxDj_74g/exec';
+let state={pin:'',data:null};
+function api(action,payload){return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,payload:payload||{}})}).then(r=>r.json()).then(x=>{if(!x||!x.ok)throw new Error((x&&x.error)||'เชื่อมต่อระบบไม่สำเร็จ');return x.data})}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function msg(id,text,type='err'){document.getElementById(id).innerHTML='<div class="'+type+'">'+esc(text)+'</div>'}
+function setBusy(id,b){const el=document.getElementById(id);if(el)el.disabled=b}
+function login(){const pin=document.getElementById('pin').value.trim();if(!pin)return msg('loginMsg','กรุณากรอกรหัส PIN');setBusy('loginBtn',true);api('teacherLogin',{pin}).then(()=>{state.pin=pin;sessionStorage.setItem('midtermTeacherPin',pin);document.getElementById('loginCard').classList.add('hidden');document.getElementById('dashboard').classList.remove('hidden');refreshDashboard()}).catch(e=>msg('loginMsg',e.message)).finally(()=>setBusy('loginBtn',false))}
+function refreshDashboard(){if(!state.pin)return;api('teacherDashboard',{pin:state.pin}).then(d=>{state.data=d;document.getElementById('sTotal').textContent=d.totalStudents||0;document.getElementById('sSubmitted').textContent=d.submittedCount||0;document.getElementById('sActive').textContent=d.activeCount||0;document.getElementById('sPass').textContent=d.passCount||0;document.getElementById('sAvg').textContent=Number(d.averagePercent||0).toFixed(2)+'%';const b=document.getElementById('examBadge');b.className='pill '+(d.examOpen?'open':'closed');b.innerHTML='<span class="dot"></span><span>'+(d.examOpen?'เปิดข้อสอบอยู่':'ปิดข้อสอบอยู่')+'</span>';renderRows()}).catch(e=>msg('actionMsg',e.message))}
+function toggleExam(open){if(!confirm(open?'ยืนยันเปิดข้อสอบให้นักเรียนเข้าสอบ?':'ยืนยันปิดข้อสอบ? นักเรียนใหม่จะไม่สามารถเริ่มสอบได้'))return;setBusy(open?'openBtn':'closeBtn',true);api('toggleExam',{pin:state.pin,open}).then(()=>{msg('actionMsg',open?'เปิดข้อสอบเรียบร้อยแล้ว':'ปิดข้อสอบเรียบร้อยแล้ว','ok');refreshDashboard()}).catch(e=>msg('actionMsg',e.message)).finally(()=>setBusy(open?'openBtn':'closeBtn',false))}
+function filteredRows(){const rows=(state.data&&state.data.responses)||[];const q=document.getElementById('search').value.trim().toLowerCase(),c=document.getElementById('classFilter').value;return rows.filter(r=>(!c||String(r.className)===c)&&(!q||[r.studentId,r.fullName,r.className].join(' ').toLowerCase().includes(q)))}
+function renderRows(){const body=document.getElementById('tbody');if(!state.data){body.innerHTML='';return}const rows=filteredRows();if(!rows.length){body.innerHTML='<tr><td colspan="10" class="empty">ยังไม่มีข้อมูลที่ตรงกับการค้นหา</td></tr>';return}body.innerHTML=rows.map(r=>{const pct=Number(r.percent||0);return '<tr><td>'+esc(r.submittedAt)+'</td><td>'+esc(r.studentId)+'</td><td>'+esc(r.fullName)+'</td><td>'+esc(r.className)+'</td><td class="score">'+esc(r.score)+' / '+esc(r.maxScore)+'</td><td class="'+(pct>=60?'pass':'fail')+'">'+pct.toFixed(2)+'%</td><td>'+esc(r.durationMin)+' นาที</td><td>'+esc(r.tabSwitchCount)+'</td><td>'+esc(reasonText(r.reason))+'</td><td><div class="actions"><button class="danger" onclick="resetAttempt(\''+String(r.studentId).replace(/'/g,'')+'\')">รีเซ็ตสิทธิ์</button></div></td></tr>'}).join('')}
+function reasonText(x){return ({COMPLETED:'ทำครบ',TIME_EXPIRED:'หมดเวลา',TAB_SWITCH_LIMIT:'ออกจอเกินกำหนด',MANUAL:'ส่งเอง'})[x]||x||'-'}
+function resetAttempt(id){if(!confirm('รีเซ็ตสิทธิ์สอบของรหัส '+id+' ? ผลสอบเดิมและเซสชันของนักเรียนคนนี้จะถูกลบ'))return;api('resetAttempt',{pin:state.pin,studentId:id}).then(()=>{msg('actionMsg','รีเซ็ตสิทธิ์รหัส '+id+' เรียบร้อยแล้ว','ok');refreshDashboard()}).catch(e=>msg('actionMsg',e.message))}
+function downloadCsv(){const rows=filteredRows();if(!rows.length)return alert('ไม่มีข้อมูลสำหรับดาวน์โหลด');const h=['SubmittedAt','StudentID','FullName','Class','Score','MaxScore','Percent','DurationMin','TabSwitchCount','Reason'];const csv=[h.join(',')].concat(rows.map(r=>[r.submittedAt,r.studentId,r.fullName,r.className,r.score,r.maxScore,r.percent,r.durationMin,r.tabSwitchCount,r.reason].map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(','))).join('\ufeff\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='midterm-2569-results.csv';a.click();URL.revokeObjectURL(url)}
+function logout(){sessionStorage.removeItem('midtermTeacherPin');state={pin:'',data:null};document.getElementById('dashboard').classList.add('hidden');document.getElementById('loginCard').classList.remove('hidden');document.getElementById('pin').value=''}
+(function(){const p=sessionStorage.getItem('midtermTeacherPin');if(p){state.pin=p;document.getElementById('loginCard').classList.add('hidden');document.getElementById('dashboard').classList.remove('hidden');refreshDashboard()}})();
+</script>
+</body>
+</html>
