@@ -18,7 +18,7 @@
 <section id="done" class="card hidden"><div class="ok"><h2 class="done-title">ส่งข้อสอบเรียบร้อยแล้ว</h2><div id="doneText"></div></div></section><div class="footer-note">คำตอบบันทึกในเครื่องระหว่างทำ • ส่งเข้าระบบครั้งเดียวเมื่อเสร็จ</div></div>
 <div id="submitting" class="submitting hidden"><div class="box"><div class="spinner"></div><b>กำลังส่งคำตอบทั้งหมด</b><div class="muted" style="margin-top:6px">กรุณาอย่าปิดหน้านี้จนกว่าจะขึ้นว่าส่งเรียบร้อย</div></div></div>
 <script>
-const API='https://script.google.com/macros/s/AKfycbwKKaDYzdgEAo8zcXMwBGzrWUTPJYUDc3ESUNFTM4s2Dw1Xr1LGaHSNOrjbzQkxDj_74g/exec';
+const API='https://script.google.com/macros/s/AKfycbxnRef5XBL5d32DrkfsRqxEzmzjcpKIY0bfAKuNtP1e8bMGLOJw4xYF9ET2H_xiD1G6eA/exec';
 const st={sessionId:null,expiresAt:0,questions:[],index:0,answers:{},submitted:false,lastEvent:0,candidate:null,examCode:'',timer:null,heartbeat:null,maxTabSwitch:3};
 function api(action,payload,method){method=method||'POST';if(method==='GET'){const qs=new URLSearchParams(Object.assign({action},payload||{}));return fetch(API+'?'+qs.toString(),{cache:'no-store'}).then(r=>r.json()).then(check)}return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,payload:payload||{}})}).then(r=>r.json()).then(check)}
 function check(x){if(!x||!x.ok)throw new Error((x&&x.error)||'เกิดข้อผิดพลาดในการเชื่อมต่อ');return x.data}
