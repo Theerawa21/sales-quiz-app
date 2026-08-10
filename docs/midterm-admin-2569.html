@@ -12,55 +12,13 @@
 <body>
 <div class="app">
 <header class="hero"><small>TEACHER CONTROL PANEL</small><h1>ระบบครูผู้สอน</h1><p>แบบทดสอบกลางภาคเรียนที่ 1 ปีการศึกษา 2569 • การขายสำหรับนักธุรกิจมืออาชีพ</p></header>
-
-<section id="loginCard" class="card loginbox">
-  <h2 class="section-title">เข้าสู่ระบบครู</h2>
-  <p class="muted">กรอกรหัส PIN ผู้ดูแลเพื่อดูคะแนนและควบคุมการเปิด–ปิดข้อสอบ</p>
-  <label for="pin">รหัส PIN</label>
-  <input id="pin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="กรอกรหัส PIN">
-  <button id="loginBtn" class="btn-full" style="margin-top:10px" onclick="login()">เข้าสู่ระบบ</button>
-  <div id="loginMsg"></div>
-</section>
-
-<main id="dashboard" class="hidden">
-  <section class="card">
-    <div class="status">
-      <div><h2 class="section-title">สถานะข้อสอบ</h2><div class="muted">ควบคุมการเข้าสอบของนักเรียนแบบทันที</div></div>
-      <span id="examBadge" class="pill closed"><span class="dot"></span><span>กำลังโหลด</span></span>
-    </div>
-    <div class="actions" style="margin-top:12px">
-      <button id="openBtn" class="success" onclick="toggleExam(true)">เปิดข้อสอบ</button>
-      <button id="closeBtn" class="danger" onclick="toggleExam(false)">ปิดข้อสอบ</button>
-      <button class="secondary" onclick="refreshDashboard()">รีเฟรชข้อมูล</button>
-    </div>
-    <div id="actionMsg"></div>
-  </section>
-
-  <section class="grid stats">
-    <div class="stat"><small>นักเรียนทั้งหมด</small><b id="sTotal">0</b></div>
-    <div class="stat"><small>ส่งแล้ว</small><b id="sSubmitted">0</b></div>
-    <div class="stat"><small>กำลังสอบ</small><b id="sActive">0</b></div>
-    <div class="stat"><small>ผ่านเกณฑ์</small><b id="sPass">0</b></div>
-    <div class="stat"><small>คะแนนเฉลี่ย</small><b id="sAvg">0%</b></div>
-  </section>
-
-  <section class="card">
-    <div class="toolbar">
-      <div><h2 class="section-title">ผลสอบนักเรียน</h2><div class="muted">ค้นหาจากรหัส ชื่อ หรือห้องเรียน</div></div>
-      <button class="secondary" onclick="downloadCsv()">ดาวน์โหลด CSV</button>
-      <button class="secondary" onclick="logout()">ออกจากระบบ</button>
-    </div>
-    <div class="search-row" style="margin-top:12px">
-      <input id="search" type="text" placeholder="ค้นหา รหัส / ชื่อ / ห้อง" oninput="renderRows()">
-      <select id="classFilter" onchange="renderRows()"><option value="">ทุกห้อง</option><option value="4/3">ม.4/3</option><option value="4/4">ม.4/4</option><option value="4/5">ม.4/5</option></select>
-    </div>
-    <div class="table-wrap"><table><thead><tr><th>เวลา</th><th>รหัส</th><th>ชื่อ-นามสกุล</th><th>ห้อง</th><th>คะแนน</th><th>%</th><th>เวลาใช้</th><th>ออกจอ</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody id="tbody"></tbody></table></div>
-  </section>
-</main>
-<div class="footer">ระบบครูผู้สอน • Google Apps Script + Google Sheets</div>
-</div>
+<section id="loginCard" class="card loginbox"><h2 class="section-title">เข้าสู่ระบบครู</h2><p class="muted">กรอกรหัส PIN ผู้ดูแลเพื่อดูคะแนนและควบคุมการเปิด–ปิดข้อสอบ</p><label for="pin">รหัส PIN</label><input id="pin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="กรอกรหัส PIN"><button id="loginBtn" class="btn-full" style="margin-top:10px" onclick="login()">เข้าสู่ระบบ</button><div id="loginMsg"></div></section>
+<main id="dashboard" class="hidden"><section class="card"><div class="status"><div><h2 class="section-title">สถานะข้อสอบ</h2><div class="muted">ควบคุมการเข้าสอบของนักเรียนแบบทันที</div></div><span id="examBadge" class="pill closed"><span class="dot"></span><span>กำลังโหลด</span></span></div><div class="actions" style="margin-top:12px"><button id="openBtn" class="success" onclick="toggleExam(true)">เปิดข้อสอบ</button><button id="closeBtn" class="danger" onclick="toggleExam(false)">ปิดข้อสอบ</button><button class="secondary" onclick="refreshDashboard()">รีเฟรชข้อมูล</button></div><div id="actionMsg"></div></section>
+<section class="grid stats"><div class="stat"><small>นักเรียนทั้งหมด</small><b id="sTotal">0</b></div><div class="stat"><small>ส่งแล้ว</small><b id="sSubmitted">0</b></div><div class="stat"><small>กำลังสอบ</small><b id="sActive">0</b></div><div class="stat"><small>ผ่านเกณฑ์</small><b id="sPass">0</b></div><div class="stat"><small>คะแนนเฉลี่ย</small><b id="sAvg">0%</b></div></section>
+<section class="card"><div class="toolbar"><div><h2 class="section-title">ผลสอบนักเรียน</h2><div class="muted">ค้นหาจากรหัส ชื่อ หรือห้องเรียน</div></div><button class="secondary" onclick="downloadCsv()">ดาวน์โหลด CSV</button><button class="secondary" onclick="logout()">ออกจากระบบ</button></div><div class="search-row" style="margin-top:12px"><input id="search" type="text" placeholder="ค้นหา รหัส / ชื่อ / ห้อง" oninput="renderRows()"><select id="classFilter" onchange="renderRows()"><option value="">ทุกห้อง</option><option value="4/3">ม.4/3</option><option value="4/4">ม.4/4</option><option value="4/5">ม.4/5</option></select></div><div class="table-wrap"><table><thead><tr><th>เวลา</th><th>รหัส</th><th>ชื่อ-นามสกุล</th><th>ห้อง</th><th>คะแนน</th><th>%</th><th>เวลาใช้</th><th>ออกจอ</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody id="tbody"></tbody></table></div></section></main>
+<div class="footer">ระบบครูผู้สอน • Google Apps Script + Google Sheets</div></div>
 <script>
-const API='https://script.google.com/macros/s/AKfycbwKKaDYzdgEAo8zcXMwBGzrWUTPJYUDc3ESUNFTM4s2Dw1Xr1LGaHSNOrjbzQkxDj_74g/exec';
+const API='https://script.google.com/macros/s/AKfycbxnRef5XBL5d32DrkfsRqxEzmzjcpKIY0bfAKuNtP1e8bMGLOJw4xYF9ET2H_xiD1G6eA/exec';
 let state={pin:'',data:null};
 function api(action,payload){return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,payload:payload||{}})}).then(r=>r.json()).then(x=>{if(!x||!x.ok)throw new Error((x&&x.error)||'เชื่อมต่อระบบไม่สำเร็จ');return x.data})}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
